@@ -5,9 +5,13 @@ export enum CardSuit {
     club,
     heart,
     spade,
+    joker,
 }
 
-export const allCardSuits = enumToArray<CardSuit>(CardSuit);
+export const allCardSuits = enumToArray<CardSuit>(CardSuit).slice(
+    0,
+    CardSuit.spade
+);
 
 export enum CardNumber {
     two = 2,
@@ -30,4 +34,11 @@ export const allCardNumbers = enumToArray<CardNumber>(CardNumber);
 export interface Card {
     suit: CardSuit;
     number: CardNumber;
+}
+
+export function getJokerCard(): Card {
+    return {
+        number: CardNumber.ace,
+        suit: CardSuit.joker,
+    };
 }

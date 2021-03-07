@@ -9,11 +9,11 @@ import {
 
 const minCardCombo = 3;
 
+export function getDescription(card: Card): string {
+    return `${card.number}-${card.suit}`;
+}
+
 export function compare(card1: Card, card2: Card): number {
-    // If any of them is joker, we always assume that they are valid for a straight flush
-    if (card1.suit === CardSuit.joker || card2.suit === CardSuit.joker) {
-        return allCardSuits.length;
-    }
     const card1InDeck = (card1.number - 1) * allCardSuits.length + card1.suit;
     const card2InDeck = (card2.number - 1) * allCardSuits.length + card2.suit;
     return card1InDeck - card2InDeck;

@@ -1,26 +1,24 @@
-import React from 'react';
-import logo from '../logo.svg';
-import './App.css';
+import React, { useRef } from 'react';
+import LamiGame from '../game/lamiGame';
+import CardHand from './Game/CardHand';
+import GameBoard from './Game/GameBoard';
 
-function App() {
+const App: React.FunctionComponent = () => {
+    const lamiGame = useRef(new LamiGame(0, 4));
+
     return (
-        <div className="App">
-            <header className="App-header">
-                <img src={logo} className="App-logo" alt="logo" />
-                <p>
-                    Edit <code>src/App.tsx</code> and save to reload.
-                </p>
-                <a
-                    className="App-link"
-                    href="https://reactjs.org"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    Learn React
-                </a>
-            </header>
+        <div
+            style={{
+                height: '100%',
+                width: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+            }}
+        >
+            <GameBoard />
+            <CardHand cards={lamiGame.current.myCards} />
         </div>
     );
-}
+};
 
 export default App;

@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Card } from '../../models/card';
+import { allCardNumbers, Card, CardNumber } from '../../models/card';
 import CardComponent from './CardComponent';
 import styles from './StraightFlushCards.module.sass';
 import useContainerSize from '../../hooks/useContainerSize';
@@ -11,6 +11,7 @@ interface StraightFlushCardsProps {
     width: string | number;
     height: string | number;
     position: Position;
+    onClick?: (cards: Card[], insertPosition: 'start' | 'end') => void;
 }
 
 const positionToDegree = {
@@ -23,7 +24,7 @@ const positionToDegree = {
 const StraightFlushCards: React.FunctionComponent<StraightFlushCardsProps> = (
     props
 ) => {
-    const { playedCards, position, width, height } = props;
+    const { playedCards, position, width, height, onClick } = props;
 
     const containerRef = useRef<HTMLDivElement>(null);
 
@@ -65,14 +66,31 @@ const StraightFlushCards: React.FunctionComponent<StraightFlushCardsProps> = (
             <div className={styles.multi_cards_container} style={style}>
                 {playedCards.map((cards, index) => (
                     <div key={index} className={styles.cards_container}>
-                        {cards.map((card) => (
-                            <CardComponent
-                                key={card.number}
-                                card={card}
-                                height={50}
-                                width={30}
-                            />
-                        ))}
+                        {cards.map((card, index) => {
+                            const clickable =
+                                cards.length < allCardNumbers.length &&
+                                card.number !== CardNumber.ace &&
+                                (index === 0 || index === cards.length - 1);
+                            const handleClick = () => {
+                                if (clickable && onClick) {
+                                    onClick(
+                                        cards,
+                                        index === 0 ? 'start' : 'end'
+                                    );
+                                }
+                            };
+
+                            return (
+                                <CardComponent
+                                    key={card.number}
+                                    card={card}
+                                    height={50}
+                                    width={30}
+                                    clickable={clickable}
+                                    onClick={handleClick}
+                                />
+                            );
+                        })}
                     </div>
                 ))}
             </div>

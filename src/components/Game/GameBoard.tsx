@@ -1,16 +1,40 @@
 import React from 'react';
 import styles from './GameBoard.module.sass';
 import StraightFlushCards from './StraightFlushCards';
-import { allCardNumbers, Card, CardSuit } from '../../models/card';
+import {
+    allCardNumbers,
+    allCardSuits,
+    Card,
+    CardNumber,
+    CardSuit,
+} from '../../models/card';
+import DiscardedCards from './DiscardedCards';
 
 const playedCards: Card[][] = [
-    allCardNumbers.map((number) => ({
-        number,
-        suit: CardSuit.spade,
-    })),
+    allCardNumbers
+        .map((number) => ({
+            number,
+            suit: CardSuit.spade,
+        }))
+        .slice(0, allCardNumbers.length - 1),
     allCardNumbers.map((number) => ({
         number,
         suit: CardSuit.heart,
+    })),
+];
+
+const discardedCards: Card[][] = [
+    allCardSuits.map((suit) => ({
+        number: CardNumber.four,
+        suit,
+    })),
+    allCardSuits.map((suit) => ({
+        number: CardNumber.jack,
+        suit,
+    })),
+    allCardSuits.map((suit) => ({
+        number: CardNumber.six,
+        suit,
     })),
 ];
 
@@ -33,7 +57,7 @@ const GameBoard: React.FunctionComponent = (props) => {
                     width="100%"
                     position="top"
                 />
-                <div className={styles.discard_area} />
+                <DiscardedCards playedCards={discardedCards} />
                 <StraightFlushCards
                     playedCards={playedCards}
                     height={horizontalHeight}

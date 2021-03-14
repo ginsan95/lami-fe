@@ -1,8 +1,10 @@
-import React, { useMemo, useState } from 'react';
-import { Button, ButtonBase } from '@material-ui/core';
+import React, { useMemo, useRef, useState } from 'react';
+import { Button } from '@material-ui/core';
 import { Card } from '../../models/card';
 import * as cardUtils from '../../utils/cardUtils';
 import styles from './CardHand.module.sass';
+import CardComponent from './CardComponent';
+import useContainerSize from '../../hooks/useContainerSize';
 
 interface CardHandProps {
     cards: Card[];
@@ -12,6 +14,9 @@ interface MyCard extends Card {
     key: string;
 }
 
+const CARD_HEIGHT = 75;
+const CARD_WIDTH = 50;
+
 const CardHand: React.FunctionComponent<CardHandProps> = (props) => {
     const { cards } = props;
 
@@ -20,11 +25,14 @@ const CardHand: React.FunctionComponent<CardHandProps> = (props) => {
         [key: string]: MyCard;
     }>({});
 
+    const containerRef = useRef<HTMLDivElement>(null);
+    const { width: containerWidth } = useContainerSize(containerRef);
+
     const myCards: MyCard[] = useMemo(() => {
         const cardCounts: { [key: string]: number } = {};
         return cards
             .sort((c1, c2) => {
-                if (sortOrder === 'suit') {
+                if (sortOrder === 'suit' && c1.suit !== c2.suit) {
                     return c1.suit - c2.suit;
                 }
                 return cardUtils.compare(c1, c2);
@@ -58,25 +66,30 @@ const CardHand: React.FunctionComponent<CardHandProps> = (props) => {
         });
     };
 
+    const cardMarginRightNeeded =
+        (containerWidth - myCards.length * CARD_WIDTH) / (myCards.length - 1);
+    const cardMarginRight = Math.min(cardMarginRightNeeded, 8);
+
     return (
-        <div className={styles.container}>
+        <div ref={containerRef} className={styles.container}>
             <div className={styles.cards_container}>
-                {myCards.map((card) => {
-                    const description = cardUtils.getDescription(card);
-                    return (
-                        <div key={card.key} className={styles.card_holder}>
-                            <ButtonBase
-                                style={{ width: '100%', height: '100%' }}
-                                onClick={() => selectCard(card)}
-                            >
-                                {description}
-                            </ButtonBase>
-                            {selectedCards[card.key] && (
-                                <div className={styles.card_overlay} />
-                            )}
-                        </div>
-                    );
-                })}
+                {myCards.map((card, index) => (
+                    <CardComponent
+                        key={card.key}
+                        card={card}
+                        height={CARD_HEIGHT}
+                        width={CARD_WIDTH}
+                        style={{
+                            marginRight:
+                                index < myCards.length - 1
+                                    ? cardMarginRight
+                                    : 0,
+                        }}
+                        selected={!!selectedCards[card.key]}
+                        clickable
+                        onClick={() => selectCard(card)}
+                    />
+                ))}
             </div>
             <div className={styles.button_container}>
                 <Button variant="contained" color="primary">

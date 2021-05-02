@@ -1,11 +1,9 @@
-import React, { useRef } from 'react';
-import LamiGame from '../game/lamiGame';
+import React from 'react';
 import CardHand from './Game/CardHand';
 import GameBoard from './Game/GameBoard';
+import { LamiGameProvider } from './Game/lamiGameContext';
 
 const App: React.FunctionComponent = () => {
-    const lamiGame = useRef(new LamiGame(0, 4));
-
     return (
         <div
             style={{
@@ -15,8 +13,10 @@ const App: React.FunctionComponent = () => {
                 flexDirection: 'column',
             }}
         >
-            <GameBoard />
-            <CardHand cards={lamiGame.current.myCards} />
+            <LamiGameProvider>
+                <GameBoard />
+                <CardHand />
+            </LamiGameProvider>
         </div>
     );
 };

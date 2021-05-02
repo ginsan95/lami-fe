@@ -58,6 +58,20 @@ class LamiGame {
         this.playerCards[playerNum] = newCards;
     };
 
+    playNewStraightFlushCards = (params: {
+        cards: Card[];
+        insertPosition: 'start' | 'end';
+    }): boolean => {
+        const { cards, insertPosition } = params;
+        const tableRow = this.straightFlushCards[this.playerNum].length;
+        return this.playStraightFlushCards({
+            playerNum: this.playerNum,
+            cards,
+            table: { tableNum: this.playerNum, row: tableRow },
+            insertPosition,
+        });
+    };
+
     playStraightFlushCards = (params: {
         playerNum: number;
         cards: Card[];
@@ -83,6 +97,13 @@ class LamiGame {
         this.straightFlushCards[tableNum][row] = newCards;
         this.reducePlayerCards(playerNum, cards);
         return true;
+    };
+
+    playMyDiscardCards = (cards: Card[]): boolean => {
+        return this.playDiscardCards({
+            playerNum: this.playerNum,
+            cards,
+        });
     };
 
     playDiscardCards = (params: {

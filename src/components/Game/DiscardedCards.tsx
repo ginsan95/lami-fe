@@ -1,30 +1,28 @@
 import React, { useCallback, useMemo } from 'react';
-import { allCardSuits, Card } from '../../models/card';
+import { Card } from '../../models/card';
 import styles from './DiscardedCards.module.sass';
 import CardComponent from './CardComponent';
 import useKeyedCards from '../../hooks/useKeyedCards';
+import useLamiGame from './useLamiGame';
 
-interface DiscardedCardsProps {
-    playedCards: Card[][];
-    onClick?: (cards: Card[]) => void;
-}
+const DiscardedCards: React.FunctionComponent = () => {
+    const { game } = useLamiGame();
+    const playedCards = Object.values(game.discardedCards);
 
-const DiscardedCards: React.FunctionComponent<DiscardedCardsProps> = (
-    props
-) => {
-    const { playedCards, onClick } = props;
     const sortedCards = useMemo(
-        () => playedCards.sort((c1, c2) => c1[0].number - c2[0].number),
+        () =>
+            playedCards.sort(
+                (c1, c2) => (c1 ? c1[0].number : 0) - (c2 ? c2[0].number : 0)
+            ),
         [playedCards]
     );
 
     return (
         <div className={styles.container}>
-            {sortedCards.map((cards) => (
+            {sortedCards.map((cards, index) => (
                 <MyCards
-                    key={cards[0].number}
-                    cards={cards}
-                    onClick={onClick}
+                    key={cards ? cards[0].number : index}
+                    cards={cards ?? []}
                 />
             ))}
         </div>
@@ -33,25 +31,18 @@ const DiscardedCards: React.FunctionComponent<DiscardedCardsProps> = (
 
 interface MyCardsProps {
     cards: Card[];
-    onClick?: (cards: Card[]) => void;
 }
 
 const MyCards: React.FunctionComponent<MyCardsProps> = (props) => {
-    const { cards, onClick } = props;
+    const { cards } = props;
     const sortCards = useCallback(
         (c1: Card, c2: Card) => c1.suit - c2.suit,
         []
     );
     const keyedCards = useKeyedCards(cards, sortCards);
-    // Max is 8 cards
-    const clickable = cards.length < allCardSuits.length * 2;
 
     return (
-        <div
-            className={styles.cards_container}
-            style={clickable ? { cursor: 'pointer' } : undefined}
-            onClick={clickable && onClick ? () => onClick(cards) : undefined}
-        >
+        <div className={styles.cards_container}>
             {keyedCards.map((card) => (
                 <CardComponent
                     key={card.key}

@@ -1,17 +1,17 @@
 import React, { useRef } from 'react';
-import { allCardNumbers, Card, CardNumber } from '../../models/card';
+import { allCardNumbers, CardNumber } from '../../models/card';
 import CardComponent from './CardComponent';
 import styles from './StraightFlushCards.module.sass';
 import useContainerSize from '../../hooks/useContainerSize';
+import useLamiGame from './useLamiGame';
 
 type Position = 'top' | 'left' | 'right' | 'bottom';
 
 interface StraightFlushCardsProps {
-    playedCards: Card[][];
+    tableNum: number;
     width: string | number;
     height: string | number;
     position: Position;
-    onClick?: (cards: Card[], insertPosition: 'start' | 'end') => void;
 }
 
 const positionToDegree = {
@@ -24,13 +24,23 @@ const positionToDegree = {
 const StraightFlushCards: React.FunctionComponent<StraightFlushCardsProps> = (
     props
 ) => {
-    const { playedCards, position, width, height, onClick } = props;
+    const { tableNum, position, width, height } = props;
+
+    const { game, playStraightFlushCards } = useLamiGame();
+    const playedCards = game.straightFlushCards[tableNum];
 
     const containerRef = useRef<HTMLDivElement>(null);
 
     const { width: containerWidth, height: containerHeight } = useContainerSize(
         containerRef
     );
+
+    const handleClick = (row: number, insertPosition: 'start' | 'end') => {
+        playStraightFlushCards({
+            table: { tableNum, row },
+            insertPosition,
+        });
+    };
 
     let style: React.CSSProperties = {
         transform: `rotate(${positionToDegree[position]}deg)`,
@@ -64,17 +74,17 @@ const StraightFlushCards: React.FunctionComponent<StraightFlushCardsProps> = (
     return (
         <div ref={containerRef} style={{ width, height, position: 'relative' }}>
             <div className={styles.multi_cards_container} style={style}>
-                {playedCards.map((cards, index) => (
-                    <div key={index} className={styles.cards_container}>
+                {playedCards.map((cards, row) => (
+                    <div key={row} className={styles.cards_container}>
                         {cards.map((card, index) => {
                             const clickable =
                                 cards.length < allCardNumbers.length &&
                                 card.number !== CardNumber.ace &&
                                 (index === 0 || index === cards.length - 1);
-                            const handleClick = () => {
-                                if (clickable && onClick) {
-                                    onClick(
-                                        cards,
+                            const onClick = () => {
+                                if (clickable) {
+                                    handleClick(
+                                        row,
                                         index === 0 ? 'start' : 'end'
                                     );
                                 }
@@ -87,7 +97,7 @@ const StraightFlushCards: React.FunctionComponent<StraightFlushCardsProps> = (
                                     height={50}
                                     width={30}
                                     clickable={clickable}
-                                    onClick={handleClick}
+                                    onClick={onClick}
                                 />
                             );
                         })}

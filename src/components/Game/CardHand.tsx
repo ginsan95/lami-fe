@@ -6,21 +6,24 @@ import styles from './CardHand.module.sass';
 import CardComponent from './CardComponent';
 import useContainerSize from '../../hooks/useContainerSize';
 import useKeyedCards, { KeyedCard } from '../../hooks/useKeyedCards';
+import useLamiGame from './useLamiGame';
 
-interface CardHandProps {
-    cards: Card[];
-}
+interface CardHandProps {}
 
 const CARD_HEIGHT = 75;
 const CARD_WIDTH = 50;
 
 const CardHand: React.FunctionComponent<CardHandProps> = (props) => {
-    const { cards } = props;
+    const {
+        game,
+        setSelectedCards,
+        selectedCards,
+        playNewStraightFlushCards,
+        discardCards,
+    } = useLamiGame();
+    const cards = game.myHandCards;
 
-    const [sortOrder, setSortOrder] = useState<'number' | 'suit'>('number');
-    const [selectedCards, setSelectedCards] = useState<{
-        [key: string]: KeyedCard;
-    }>({});
+    const [sortOrder, setSortOrder] = useState<'number' | 'suit'>('suit');
 
     const containerRef = useRef<HTMLDivElement>(null);
     const { width: containerWidth } = useContainerSize(containerRef);
@@ -58,6 +61,10 @@ const CardHand: React.FunctionComponent<CardHandProps> = (props) => {
         });
     };
 
+    const resetSelection = () => {
+        setSelectedCards({});
+    };
+
     const cardMarginRightNeeded =
         (containerWidth - keyedCards.length * CARD_WIDTH) /
         (keyedCards.length - 1);
@@ -85,13 +92,24 @@ const CardHand: React.FunctionComponent<CardHandProps> = (props) => {
                 ))}
             </div>
             <div className={styles.button_container}>
-                <Button variant="contained" color="primary">
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={playNewStraightFlushCards}
+                >
                     Play
                 </Button>
                 <Button
                     variant="contained"
+                    color="primary"
+                    onClick={discardCards}
+                >
+                    Discard
+                </Button>
+                <Button
+                    variant="contained"
                     color="secondary"
-                    onClick={() => setSelectedCards({})}
+                    onClick={resetSelection}
                 >
                     Reset Selection
                 </Button>

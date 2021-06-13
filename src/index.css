@@ -1,6 +1,7 @@
 html {
   height: 100%;
   width: 100%;
+  box-sizing: border-box;
 }
 
 body {
@@ -22,4 +23,8 @@ code {
 #root {
   height: 100%;
   width: 100%;
+}
+
+*, *:before, *:after {
+  box-sizing: inherit;
 }

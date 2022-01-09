@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import LamiGame from '../../game/lamiGame';
 import { KeyedCard } from '../../hooks/useKeyedCards';
 
@@ -15,16 +15,21 @@ export interface ILamiGameContext {
 }
 
 export const LamiGameContext = React.createContext<ILamiGameContext>({
-    game: new LamiGame(0, 4),
+    game: new LamiGame(0, []),
     round: 1,
     increaseRound: () => {},
     selectedCards: {},
     setSelectedCards: () => {},
 });
 
-export const LamiGameProvider: React.FunctionComponent = ({ children }) => {
-    const lamiGame = useRef(new LamiGame(0, 4));
+interface LamiGameProviderProps {
+    game: LamiGame;
+}
 
+export const LamiGameProvider: React.FunctionComponent<LamiGameProviderProps> = ({
+    children,
+    game,
+}) => {
     const [round, setRound] = useState(1);
     const [selectedCards, setSelectedCards] = useState({});
 
@@ -35,7 +40,7 @@ export const LamiGameProvider: React.FunctionComponent = ({ children }) => {
     return (
         <LamiGameContext.Provider
             value={{
-                game: lamiGame.current,
+                game,
                 round,
                 increaseRound,
                 selectedCards,

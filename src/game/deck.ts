@@ -5,6 +5,11 @@ import {
     getJokerCard,
 } from '../models/card';
 
+const playerCountToCardCount = {
+    3: 4 * 6, // Take 6 times
+    4: 4 * 5, // Take 5 times
+};
+
 class Deck {
     cards: Card[];
 
@@ -32,6 +37,14 @@ class Deck {
             this.cards[i] = this.cards[randIndex];
             this.cards[randIndex] = temp;
         }
+    };
+
+    getCards = (playerNum: number, playersCount: 3 | 4 = 4): Card[] => {
+        const numberOfCardsToTake = playerCountToCardCount[playersCount];
+        return this.cards.slice(
+            playerNum * numberOfCardsToTake,
+            (playerNum + 1) * numberOfCardsToTake
+        );
     };
 }
 

@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { useLocation, useParams } from 'react-router-dom';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { useHistory, useLocation, useParams } from 'react-router-dom';
 import {
     Button,
     CircularProgress,
@@ -14,6 +14,9 @@ import MessageHandler, { IMessageHandler } from '../../utils/messageHandler';
 import { ErrorMessage, MessageType } from '../../models/message';
 import * as gameRoomActions from '../../actions/gameRoom';
 import { getRandomName } from '../../constants/names';
+import routeURLs from '../Routes/urls';
+import Deck from '../../game/deck';
+import { GameRoomContext } from './gameRoomContext';
 
 interface RouteParams {
     roomID: string;
@@ -26,6 +29,7 @@ interface RouteState {
 const GameRoom: React.FunctionComponent = () => {
     const { roomID } = useParams<RouteParams>();
     const stateName = useLocation<RouteState>().state?.name;
+    const history = useHistory();
     const isHost = roomID === 'host';
 
     const messageHandler = useRef<IMessageHandler>(new MessageHandler());
@@ -35,9 +39,14 @@ const GameRoom: React.FunctionComponent = () => {
 
     const [myName, setMyName] = useState<string>(stateName ?? getRandomName());
 
-    const [players, setPlayers] = useState<Player[]>([
-        { name: myName, isHost },
-    ]);
+    const { players, setPlayers } = useContext(GameRoomContext);
+
+    // Setup initial player for host
+    useEffect(() => {
+        if (isHost) {
+            setPlayers([{ name: myName, isHost, peerID: roomManager.peer.id }]);
+        }
+    }, [isHost, setPlayers, myName]);
 
     // Setup message handler
     useEffect(() => {
@@ -60,15 +69,16 @@ const GameRoom: React.FunctionComponent = () => {
                 const newName = nameExist
                     ? getRandomName(players.map((value) => value.name))
                     : undefined;
-                const message = gameRoomActions.joinRoomSuccess(
-                    player.name,
-                    newName
-                );
-                roomManager.sendMessage(message);
+                const message = gameRoomActions.joinRoomSuccess({
+                    name: player.name,
+                    newName,
+                });
+                roomManager.sendMessage(message, player.peerID);
 
                 // Update players
-                const newPlayer = {
+                const newPlayer: Player = {
                     name: newName ?? player.name,
+                    peerID: player.peerID,
                     isHost: false,
                 };
                 setPlayers((currentPlayers) => [...currentPlayers, newPlayer]);
@@ -79,7 +89,7 @@ const GameRoom: React.FunctionComponent = () => {
                 );
             }
         });
-    }, [isHost, players]);
+    }, [isHost, players, setPlayers]);
 
     // Client message handler
     useEffect(() => {
@@ -89,6 +99,7 @@ const GameRoom: React.FunctionComponent = () => {
 
         handler.on(MessageType.JOIN_ROOM_SUCCESS, (payload) => {
             if (myName !== payload.name) return;
+
             setActualRoomID(roomID);
             if (payload.newName) {
                 setMyName(payload.newName);
@@ -98,7 +109,18 @@ const GameRoom: React.FunctionComponent = () => {
         handler.on(MessageType.UPDATE_PLAYERS, (players) => {
             setPlayers(players);
         });
-    }, [isHost, myName, roomID]);
+
+        handler.on(MessageType.START_GAME, (payload) => {
+            const { player, playerNum, cards } = payload;
+            if (player.name !== myName) return;
+
+            // Transition to game screen
+            history.push(routeURLs.GAME, {
+                playerNum,
+                cards,
+            });
+        });
+    }, [isHost, myName, roomID, history, setPlayers]);
 
     // Error message handler
     useEffect(() => {
@@ -118,7 +140,6 @@ const GameRoom: React.FunctionComponent = () => {
     useEffect(() => {
         if (!isHost) return;
 
-        console.log('update players');
         roomManager.sendMessage(gameRoomActions.updatePlayers(players));
     }, [players, isHost]);
 
@@ -136,6 +157,7 @@ const GameRoom: React.FunctionComponent = () => {
                     const message = gameRoomActions.joinRoom({
                         name: myName,
                         isHost,
+                        peerID: roomManager.peer.id,
                     });
                     roomManager.sendMessage(message);
                 }
@@ -145,6 +167,30 @@ const GameRoom: React.FunctionComponent = () => {
         };
         action().catch((error) => console.error(error));
     }, [isHost, roomID, myName, actualRoomID]);
+
+    const startGame = () => {
+        // Create new deck.
+        const deck = new Deck();
+        const playerCount: 3 | 4 = players.length as any;
+        players.forEach((player, index) => {
+            // Ignore for host
+            if (player.isHost) return;
+            const cards = deck.getCards(index, playerCount);
+            const message = gameRoomActions.startGame({
+                player,
+                playerNum: index,
+                cards,
+            });
+            // Inform all players to start the game with their cards
+            roomManager.sendMessage(message, player.peerID);
+        });
+
+        // Transition to game screen
+        history.push(routeURLs.GAME, {
+            playerNum: 0,
+            cards: deck.getCards(0, playerCount),
+        });
+    };
 
     const renderTitleContent = () => {
         if (actualRoomID) {
@@ -189,6 +235,7 @@ const GameRoom: React.FunctionComponent = () => {
                         variant="contained"
                         color="primary"
                         disabled={players.length !== 4}
+                        onClick={startGame}
                     >
                         Start Game
                     </Button>

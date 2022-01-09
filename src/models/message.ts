@@ -4,11 +4,12 @@ export enum MessageType {
     JOIN_ROOM = 'join_room',
     JOIN_ROOM_SUCCESS = 'join_room_success',
     UPDATE_PLAYERS = 'update_players',
+    START_GAME = 'start_game',
 }
 
-export interface Message {
+export interface Message<T = any> {
     type: MessageType;
-    payload: any;
+    payload: T;
 }
 
 export enum ErrorMessage {

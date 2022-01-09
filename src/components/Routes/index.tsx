@@ -1,9 +1,8 @@
 import React from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import routeURLs from './urls';
-import Game from '../Game';
-import GameRoom from '../Room/GameRoom';
 import Lobby from '../Lobby';
+import GameRoute from './GameRoute';
 
 const Routes: React.FunctionComponent = () => {
     return (
@@ -12,11 +11,8 @@ const Routes: React.FunctionComponent = () => {
                 <Route path="/" exact>
                     <Lobby />
                 </Route>
-                <Route path={routeURLs.GAME} exact>
-                    <Game />
-                </Route>
-                <Route path={routeURLs.ROOM} exact>
-                    <GameRoom />
+                <Route path={[routeURLs.GAME, routeURLs.ROOM]}>
+                    <GameRoute />
                 </Route>
             </Switch>
         </Router>

@@ -5,7 +5,7 @@ class RoomManager2 {
     private _peer: Peer | undefined;
     private roomID: string | undefined;
 
-    private connections: DataConnection[] = [];
+    private connections: { [key: string]: DataConnection } = {};
 
     messageHandler?: MessageHandler;
 
@@ -20,7 +20,7 @@ class RoomManager2 {
         const id = await this.initializePeer();
 
         this.peer.on('connection', (connection) => {
-            this.connections.push(connection);
+            this.connections[connection.peer] = connection;
             this.listenToMessage(connection);
             console.log('New connection', connection);
         });
@@ -32,7 +32,7 @@ class RoomManager2 {
         await this.initializePeer();
         return new Promise((resolve) => {
             const connection = this.peer.connect(roomID);
-            this.connections.push(connection);
+            this.connections[connection.peer] = connection;
             this.listenToMessage(connection);
             connection.on('open', () => {
                 resolve();
@@ -40,10 +40,16 @@ class RoomManager2 {
         });
     };
 
-    sendMessage = (message: any) => {
-        this.connections.forEach((connection) => {
-            connection.send(message);
-        });
+    sendMessage = (message: any, peerID?: string) => {
+        if (peerID) {
+            // Send to specific peer if available
+            this.connections[peerID]?.send(message);
+        } else {
+            // Else send to everyone
+            for (let myPeerID in this.connections) {
+                this.connections[myPeerID].send(message);
+            }
+        }
     };
 
     private initializePeer = async (): Promise<string> => {

@@ -1,31 +1,19 @@
-import Deck from './deck';
 import { Card, CardNumber, CardSuit } from '../models/card';
 import * as cardUtils from '../utils/cardUtils';
 
-const playerCountToCardCount = {
-    3: 4 * 6, // Take 6 times
-    4: 4 * 5, // Take 5 times
-};
-
 class LamiGame {
-    deck: Deck;
     playerNum: number;
     playerCards: Card[][] = [];
 
     straightFlushCards: Card[][][] = [];
     discardedCards: { [K in CardNumber]?: Card[] } = {};
 
-    constructor(playerNum: number, playersCount: 3 | 4) {
-        this.deck = new Deck();
+    deadPlayers: Set<number> = new Set();
+
+    constructor(playerNum: number, myCards: Card[], playersCount: 3 | 4 = 4) {
         this.playerNum = playerNum;
-        const numberOfCardsToTake = playerCountToCardCount[playersCount];
+        this.playerCards[playerNum] = myCards;
         for (let i = 0; i < playersCount; i++) {
-            this.playerCards.push(
-                this.deck.cards.slice(
-                    i * numberOfCardsToTake,
-                    (i + 1) * numberOfCardsToTake
-                )
-            );
             this.straightFlushCards.push([]);
         }
     }

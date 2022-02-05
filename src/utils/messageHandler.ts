@@ -1,6 +1,10 @@
 import { Player } from '../models/player';
 import { Message, MessageType } from '../models/message';
 import { JoinRoomSuccessPayload, StartGamePayload } from '../actions/gameRoom';
+import {
+    PlayDiscardCardsPayload,
+    PlayStraightFlushCardsPayload,
+} from '../game/lamiGame';
 
 export interface IMessageHandler {
     on(type: MessageType.JOIN_ROOM, handler: (player: Player) => void): void;
@@ -16,6 +20,16 @@ export interface IMessageHandler {
         type: MessageType.START_GAME,
         handler: (payload: StartGamePayload) => void
     ): void;
+
+    on(
+        type: MessageType.PLAY_STRAIGHT_FLUSH_CARDS,
+        handler: (payload: PlayStraightFlushCardsPayload) => void
+    ): void;
+    on(
+        type: MessageType.PLAY_DISCARD_CARDS,
+        handler: (payload: PlayDiscardCardsPayload) => void
+    ): void;
+    on(type: MessageType.SURRENDER, handler: (playerNum: number) => void): void;
 
     on(type: MessageType.ERROR, handler: (error: Error) => void): void;
 }

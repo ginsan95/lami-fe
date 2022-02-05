@@ -85,7 +85,8 @@ const GameRoom: React.FunctionComponent = () => {
             } else {
                 // Return error if already max player
                 roomManager.sendMessage(
-                    gameRoomActions.sendError(ErrorMessage.PLAYERS_FULL)
+                    gameRoomActions.sendError(ErrorMessage.PLAYERS_FULL),
+                    player.peerID
                 );
             }
         });
@@ -118,6 +119,7 @@ const GameRoom: React.FunctionComponent = () => {
             history.push(routeURLs.GAME, {
                 playerNum,
                 cards,
+                isHost,
             });
         });
     }, [isHost, myName, roomID, history, setPlayers]);
@@ -189,6 +191,7 @@ const GameRoom: React.FunctionComponent = () => {
         history.push(routeURLs.GAME, {
             playerNum: 0,
             cards: deck.getCards(0, playerCount),
+            isHost: true,
         });
     };
 

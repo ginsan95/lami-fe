@@ -4,17 +4,17 @@ import GameBoard from './GameBoard';
 import CardHand from './CardHand';
 import { useLocation } from 'react-router-dom';
 import LamiGame from '../../game/lamiGame';
-import { Player } from '../../models/player';
 import { Card } from '../../models/card';
 
 interface LocationState {
-    player?: Player;
+    isHost?: boolean;
     playerNum?: number;
     cards?: Card[];
 }
 
 const Game: React.FunctionComponent = () => {
-    const { playerNum, cards } = useLocation<LocationState>().state ?? {};
+    const { playerNum, cards, isHost } =
+        useLocation<LocationState>().state ?? {};
 
     const lamiGame = useRef<LamiGame | undefined>(
         playerNum !== undefined && cards
@@ -22,7 +22,7 @@ const Game: React.FunctionComponent = () => {
             : undefined
     );
 
-    if (!lamiGame.current) {
+    if (!lamiGame.current || playerNum === undefined || isHost === undefined) {
         return <>Error: Missing Game</>;
     }
 
@@ -35,7 +35,11 @@ const Game: React.FunctionComponent = () => {
                 flexDirection: 'column',
             }}
         >
-            <LamiGameProvider game={lamiGame.current}>
+            <LamiGameProvider
+                game={lamiGame.current}
+                playerNum={playerNum}
+                isHost={isHost}
+            >
                 <GameBoard />
                 <CardHand />
             </LamiGameProvider>

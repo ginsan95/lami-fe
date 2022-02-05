@@ -1,6 +1,10 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import LamiGame from '../../game/lamiGame';
 import { KeyedCard } from '../../hooks/useKeyedCards';
+import MessageHandler, { IMessageHandler } from '../../utils/messageHandler';
+import roomManager from '../../utils/roomManager2';
+import { MessageType } from '../../models/message';
+import * as gameActions from '../../actions/game';
 
 type SelectedCards = {
     [key: string]: KeyedCard;
@@ -24,11 +28,15 @@ export const LamiGameContext = React.createContext<ILamiGameContext>({
 
 interface LamiGameProviderProps {
     game: LamiGame;
+    playerNum: number;
+    isHost: boolean;
 }
 
 export const LamiGameProvider: React.FunctionComponent<LamiGameProviderProps> = ({
     children,
     game,
+    playerNum,
+    isHost,
 }) => {
     const [round, setRound] = useState(1);
     const [selectedCards, setSelectedCards] = useState({});
@@ -39,6 +47,56 @@ export const LamiGameProvider: React.FunctionComponent<LamiGameProviderProps> = 
         // Increase the round to regenerate the UI.
         setRound((round) => round + 1);
     }, [game]);
+
+    const messageHandler = useRef<IMessageHandler>(new MessageHandler());
+
+    // Setup message handler
+    useEffect(() => {
+        roomManager.messageHandler = messageHandler.current as MessageHandler;
+        return () => (roomManager.messageHandler = undefined);
+    }, []);
+
+    // Common message handler. Host and client share the same.
+    useEffect(() => {
+        const handler = messageHandler.current;
+
+        handler.on(MessageType.PLAY_STRAIGHT_FLUSH_CARDS, (payload) => {
+            if (payload.playerNum === playerNum) return;
+            // Play this cards in my game instant.
+            game.playStraightFlushCards(payload);
+            nextTurn();
+            // Inform other players about this for host.
+            if (isHost) {
+                roomManager.sendMessage(
+                    gameActions.playStraightFlushCards(payload)
+                );
+            }
+        });
+
+        handler.on(MessageType.PLAY_DISCARD_CARDS, (payload) => {
+            if (payload.playerNum === playerNum) return;
+            // Play this cards in my game instant.
+            game.playDiscardCards(payload);
+            nextTurn();
+            // Inform other players about this for host.
+            if (isHost) {
+                roomManager.sendMessage(gameActions.playDiscardCards(payload));
+            }
+        });
+
+        handler.on(MessageType.SURRENDER, (surrenderPlayerNum) => {
+            if (surrenderPlayerNum === playerNum) return;
+            // Surrender in my game instant.
+            game.surrender(surrenderPlayerNum);
+            nextTurn();
+            // Inform other players about this for host.
+            if (isHost) {
+                roomManager.sendMessage(
+                    gameActions.surrender(surrenderPlayerNum)
+                );
+            }
+        });
+    }, [isHost, playerNum, game, nextTurn]);
 
     return (
         <LamiGameContext.Provider

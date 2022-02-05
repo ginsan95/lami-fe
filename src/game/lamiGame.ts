@@ -1,6 +1,18 @@
 import { Card, CardNumber, CardSuit } from '../models/card';
 import * as cardUtils from '../utils/cardUtils';
 
+export interface PlayStraightFlushCardsPayload {
+    playerNum: number;
+    cards: Card[];
+    table: { tableNum: number; row: number };
+    insertPosition: 'start' | 'end';
+}
+
+export interface PlayDiscardCardsPayload {
+    playerNum: number;
+    cards: Card[];
+}
+
 class LamiGame {
     playerNum: number;
     handCards: Card[] = [];
@@ -56,26 +68,23 @@ class LamiGame {
             this.playersCardCount[playerNum] - cardsLength;
     };
 
-    playNewStraightFlushCards = (params: {
+    newStraightFlushCardsPayload = (params: {
         cards: Card[];
         insertPosition: 'start' | 'end';
-    }): boolean => {
+    }): PlayStraightFlushCardsPayload => {
         const { cards, insertPosition } = params;
         const tableRow = this.straightFlushCards[this.playerNum].length;
-        return this.playStraightFlushCards({
+        return {
             playerNum: this.playerNum,
             cards,
             table: { tableNum: this.playerNum, row: tableRow },
             insertPosition,
-        });
+        };
     };
 
-    playStraightFlushCards = (params: {
-        playerNum: number;
-        cards: Card[];
-        table: { tableNum: number; row: number };
-        insertPosition: 'start' | 'end';
-    }): boolean => {
+    playStraightFlushCards = (
+        params: PlayStraightFlushCardsPayload
+    ): boolean => {
         const { playerNum, cards, table, insertPosition } = params;
         const { tableNum, row } = table;
 
@@ -99,17 +108,7 @@ class LamiGame {
         return true;
     };
 
-    playMyDiscardCards = (cards: Card[]): boolean => {
-        return this.playDiscardCards({
-            playerNum: this.playerNum,
-            cards,
-        });
-    };
-
-    playDiscardCards = (params: {
-        playerNum: number;
-        cards: Card[];
-    }): boolean => {
+    playDiscardCards = (params: PlayDiscardCardsPayload): boolean => {
         const { playerNum, cards } = params;
         if (cards.length === 0) return false;
 
@@ -137,6 +136,10 @@ class LamiGame {
         this.reducePlayerCardsCount(playerNum, cards.length);
 
         return true;
+    };
+
+    surrender = (playerNum: number) => {
+        this.deadPlayers.add(playerNum);
     };
 
     nextTurn = () => {

@@ -3,7 +3,7 @@ import { LamiGameContext } from './lamiGameContext';
 
 export default function useLamiGame() {
     const context = useContext(LamiGameContext);
-    const { game, increaseRound, selectedCards, setSelectedCards } = context;
+    const { game, nextTurn, selectedCards, setSelectedCards } = context;
 
     const { playerNum } = game;
 
@@ -18,7 +18,7 @@ export default function useLamiGame() {
         });
         if (valid) {
             resetSelection();
-            increaseRound();
+            nextTurn();
         }
     };
 
@@ -33,7 +33,7 @@ export default function useLamiGame() {
         });
         if (valid) {
             resetSelection();
-            increaseRound();
+            nextTurn();
         }
     };
 
@@ -41,7 +41,7 @@ export default function useLamiGame() {
         const valid = game.playMyDiscardCards(Object.values(selectedCards));
         if (valid) {
             resetSelection();
-            increaseRound();
+            nextTurn();
         }
     };
 

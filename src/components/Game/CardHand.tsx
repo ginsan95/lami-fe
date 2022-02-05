@@ -21,7 +21,7 @@ const CardHand: React.FunctionComponent<CardHandProps> = (props) => {
         playNewStraightFlushCards,
         discardCards,
     } = useLamiGame();
-    const cards = game.myHandCards;
+    const cards = game.handCards;
 
     const [sortOrder, setSortOrder] = useState<'number' | 'suit'>('suit');
 
@@ -96,6 +96,7 @@ const CardHand: React.FunctionComponent<CardHandProps> = (props) => {
                     variant="contained"
                     color="primary"
                     onClick={playNewStraightFlushCards}
+                    disabled={!game.allowedToPlay}
                 >
                     Play
                 </Button>
@@ -103,6 +104,7 @@ const CardHand: React.FunctionComponent<CardHandProps> = (props) => {
                     variant="contained"
                     color="primary"
                     onClick={discardCards}
+                    disabled={!game.allowedToPlay}
                 >
                     Discard
                 </Button>

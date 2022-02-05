@@ -3,33 +3,38 @@ import * as cardUtils from '../utils/cardUtils';
 
 class LamiGame {
     playerNum: number;
-    playerCards: Card[][] = [];
+    handCards: Card[] = [];
+    playersCount: number;
 
     straightFlushCards: Card[][][] = [];
     discardedCards: { [K in CardNumber]?: Card[] } = {};
 
+    playersCardCount: number[] = [];
     deadPlayers: Set<number> = new Set();
+    playerNumTurn: number = 0;
 
-    constructor(playerNum: number, myCards: Card[], playersCount: 3 | 4 = 4) {
+    get allowedToPlay(): boolean {
+        return (
+            this.playerNumTurn === this.playerNum &&
+            !this.deadPlayers.has(this.playerNum)
+        );
+    }
+
+    constructor(playerNum: number, handCards: Card[], playersCount: 3 | 4 = 4) {
         this.playerNum = playerNum;
-        this.playerCards[playerNum] = myCards;
+        this.handCards = handCards;
+        this.playersCount = playersCount;
         for (let i = 0; i < playersCount; i++) {
             this.straightFlushCards.push([]);
+            this.playersCardCount.push(handCards.length);
         }
     }
 
-    handCards = (playerNum: number): Card[] => {
-        return this.playerCards[playerNum];
-    };
-
-    get myHandCards(): Card[] {
-        return this.handCards(this.playerNum);
-    }
-
     private reducePlayerCards = (playerNum: number, cards: Card[]) => {
-        if (playerNum >= this.playerCards.length) return;
+        // We can only reduce own cards.
+        if (playerNum !== this.playerNum) return;
         let currentIndex = 0;
-        const newCards = [...this.playerCards[playerNum]];
+        const newCards = [...this.handCards];
         while (currentIndex < cards.length) {
             const currentCard = cards[currentIndex];
             for (let i = 0; i < newCards.length; i++) {
@@ -43,7 +48,12 @@ class LamiGame {
             }
             currentIndex++;
         }
-        this.playerCards[playerNum] = newCards;
+        this.handCards = newCards;
+    };
+
+    reducePlayerCardsCount = (playerNum: number, cardsLength: number) => {
+        this.playersCardCount[playerNum] =
+            this.playersCardCount[playerNum] - cardsLength;
     };
 
     playNewStraightFlushCards = (params: {
@@ -84,6 +94,8 @@ class LamiGame {
 
         this.straightFlushCards[tableNum][row] = newCards;
         this.reducePlayerCards(playerNum, cards);
+        this.reducePlayerCardsCount(playerNum, cards.length);
+
         return true;
     };
 
@@ -122,8 +134,38 @@ class LamiGame {
         // Replace with new value
         this.discardedCards[key] = combinedCards;
         this.reducePlayerCards(playerNum, cards);
+        this.reducePlayerCardsCount(playerNum, cards.length);
 
         return true;
+    };
+
+    nextTurn = () => {
+        // All players are dead, it will forever be my turn.
+        if (this.deadPlayers.size >= this.playersCount - 1) {
+            return;
+        }
+        let newTurn = this.playerNumTurn;
+        do {
+            newTurn = (newTurn + 1) % this.playersCount;
+        } while (this.deadPlayers.has(newTurn));
+        this.playerNumTurn = newTurn;
+    };
+
+    getTableNumber = (
+        position: 'top' | 'left' | 'right' | 'bottom'
+    ): number => {
+        switch (position) {
+            case 'top':
+                return (this.playerNum + 2) % this.playersCount;
+            case 'left':
+                return (this.playerNum + 3) % this.playersCount;
+            case 'right':
+                return (this.playerNum + 1) % this.playersCount;
+            case 'bottom':
+                return this.playerNum;
+            default:
+                return this.playerNum;
+        }
     };
 }
 

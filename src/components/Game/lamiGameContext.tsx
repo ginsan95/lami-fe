@@ -9,7 +9,7 @@ type SelectedCards = {
 export interface ILamiGameContext {
     game: LamiGame;
     round: number;
-    increaseRound: () => void;
+    nextTurn: () => void;
     selectedCards: SelectedCards;
     setSelectedCards: React.Dispatch<React.SetStateAction<SelectedCards>>;
 }
@@ -17,7 +17,7 @@ export interface ILamiGameContext {
 export const LamiGameContext = React.createContext<ILamiGameContext>({
     game: new LamiGame(0, []),
     round: 1,
-    increaseRound: () => {},
+    nextTurn: () => {},
     selectedCards: {},
     setSelectedCards: () => {},
 });
@@ -33,16 +33,19 @@ export const LamiGameProvider: React.FunctionComponent<LamiGameProviderProps> = 
     const [round, setRound] = useState(1);
     const [selectedCards, setSelectedCards] = useState({});
 
-    const increaseRound = useCallback(() => {
+    const nextTurn = useCallback(() => {
+        // Change the player turn.
+        game.nextTurn();
+        // Increase the round to regenerate the UI.
         setRound((round) => round + 1);
-    }, []);
+    }, [game]);
 
     return (
         <LamiGameContext.Provider
             value={{
                 game,
                 round,
-                increaseRound,
+                nextTurn,
                 selectedCards,
                 setSelectedCards,
             }}

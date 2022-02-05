@@ -4,6 +4,7 @@ import styles from './DiscardedCards.module.sass';
 import CardComponent from './CardComponent';
 import useKeyedCards from '../../hooks/useKeyedCards';
 import useLamiGame from './useLamiGame';
+import PlayersName from './PlayersName';
 
 const DiscardedCards: React.FunctionComponent = () => {
     const { game } = useLamiGame();
@@ -19,6 +20,7 @@ const DiscardedCards: React.FunctionComponent = () => {
 
     return (
         <div className={styles.container}>
+            <PlayersName />
             {sortedCards.map((cards, index) => (
                 <MyCards
                     key={cards ? cards[0].number : index}

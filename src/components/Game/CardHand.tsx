@@ -1,5 +1,5 @@
 import React, { useCallback, useRef, useState } from 'react';
-import { Button } from '@material-ui/core';
+import { Button, Dialog, DialogTitle } from '@material-ui/core';
 import { Card } from '../../models/card';
 import * as cardUtils from '../../utils/cardUtils';
 import styles from './CardHand.module.sass';
@@ -20,10 +20,12 @@ const CardHand: React.FunctionComponent<CardHandProps> = (props) => {
         selectedCards,
         playNewStraightFlushCards,
         discardCards,
+        surrender,
     } = useLamiGame();
     const cards = game.handCards;
 
     const [sortOrder, setSortOrder] = useState<'number' | 'suit'>('suit');
+    const [isSurrenderOpen, setIsSurrenderOpen] = useState(false);
 
     const containerRef = useRef<HTMLDivElement>(null);
     const { width: containerWidth } = useContainerSize(containerRef);
@@ -111,14 +113,32 @@ const CardHand: React.FunctionComponent<CardHandProps> = (props) => {
                 <Button
                     variant="contained"
                     color="secondary"
-                    onClick={resetSelection}
+                    onClick={() => setIsSurrenderOpen(true)}
+                    disabled={!game.allowedToPlay}
                 >
+                    Surrender
+                </Button>
+                <Button variant="contained" onClick={resetSelection}>
                     Reset Selection
                 </Button>
                 <Button variant="contained" onClick={changeSort}>
                     Change Sort
                 </Button>
             </div>
+            <Dialog open={isSurrenderOpen}>
+                <DialogTitle>Are you sure you want to surrender?</DialogTitle>
+                <Button
+                    onClick={() => {
+                        surrender();
+                        setIsSurrenderOpen(false);
+                    }}
+                >
+                    Proceed
+                </Button>
+                <Button onClick={() => setIsSurrenderOpen(false)}>
+                    Cancel
+                </Button>
+            </Dialog>
         </div>
     );
 };

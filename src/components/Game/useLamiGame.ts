@@ -45,10 +45,16 @@ export default function useLamiGame() {
         }
     };
 
+    const surrender = () => {
+        game.deadPlayers.add(game.playerNum);
+        nextTurn();
+    };
+
     return {
         ...context,
         playNewStraightFlushCards,
         playStraightFlushCards,
         discardCards,
+        surrender,
     };
 }

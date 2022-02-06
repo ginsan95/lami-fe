@@ -156,8 +156,8 @@ class LamiGame {
     };
 
     nextTurn = () => {
-        // All players are dead, it will forever be my turn.
-        if (this.deadPlayers.size >= this.playersCount - 1) {
+        // All players are dead, no need to change turn.
+        if (this.deadPlayers.size >= this.playersCount) {
             return;
         }
         let newTurn = this.playerNumTurn;

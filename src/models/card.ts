@@ -36,9 +36,13 @@ export interface Card {
     number: CardNumber;
 }
 
+let currentJokerNumber = CardNumber.two;
+
 export function getJokerCard(): Card {
-    return {
-        number: CardNumber.ace,
+    const card = {
+        number: currentJokerNumber,
         suit: CardSuit.joker,
     };
+    currentJokerNumber += 1; // Ensure joker always unique
+    return card;
 }

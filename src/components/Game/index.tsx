@@ -13,7 +13,7 @@ interface LocationState {
 }
 
 const Game: React.FunctionComponent = () => {
-    const { playerNum, cards, isHost } =
+    const { playerNum, cards, isHost = false } =
         useLocation<LocationState>().state ?? {};
 
     const lamiGame = useRef<LamiGame | undefined>(

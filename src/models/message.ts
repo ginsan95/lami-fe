@@ -9,6 +9,8 @@ export enum MessageType {
     PLAY_STRAIGHT_FLUSH_CARDS = 'play_straight_flush_card',
     PLAY_DISCARD_CARDS = 'play_discard_cards',
     SURRENDER = 'surrender',
+
+    CALCULATE_PLAYER_SCORE = 'calculate_player_score',
 }
 
 export interface Message<T = any> {

@@ -57,7 +57,7 @@ export const LamiGameProvider: React.FunctionComponent<LamiGameProviderProps> = 
     const endGameIfPossible = useCallback(() => {
         if (!game.isGameFinished) return;
         // Transition to score board screen
-        history.push(routeURLs.GAME, {
+        history.push(routeURLs.SCORE_BOARD, {
             playerNum: game.playerNum,
             cards: game.handCards,
             isHost,

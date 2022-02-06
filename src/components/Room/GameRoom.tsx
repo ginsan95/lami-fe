@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 import {
     Button,
@@ -15,8 +15,7 @@ import { ErrorMessage, MessageType } from '../../models/message';
 import * as gameRoomActions from '../../actions/gameRoom';
 import { getRandomName } from '../../constants/names';
 import routeURLs from '../Routes/urls';
-import Deck from '../../game/deck';
-import { GameRoomContext } from './gameRoomContext';
+import useGameRoom from './useGameRoom';
 
 interface RouteParams {
     roomID: string;
@@ -39,7 +38,7 @@ const GameRoom: React.FunctionComponent = () => {
 
     const [myName, setMyName] = useState<string>(stateName ?? getRandomName());
 
-    const { players, setPlayers } = useContext(GameRoomContext);
+    const { players, setPlayers, startGame } = useGameRoom();
 
     // Setup initial player for host
     useEffect(() => {
@@ -85,8 +84,7 @@ const GameRoom: React.FunctionComponent = () => {
             } else {
                 // Return error if already max player
                 roomManager.sendMessage(
-                    gameRoomActions.sendError(ErrorMessage.PLAYERS_FULL),
-                    player.peerID
+                    gameRoomActions.sendError(ErrorMessage.PLAYERS_FULL)
                 );
             }
         });
@@ -169,31 +167,6 @@ const GameRoom: React.FunctionComponent = () => {
         };
         action().catch((error) => console.error(error));
     }, [isHost, roomID, myName, actualRoomID]);
-
-    const startGame = () => {
-        // Create new deck.
-        const deck = new Deck();
-        const playerCount: 3 | 4 = players.length as any;
-        players.forEach((player, index) => {
-            // Ignore for host
-            if (player.isHost) return;
-            const cards = deck.getCards(index, playerCount);
-            const message = gameRoomActions.startGame({
-                player,
-                playerNum: index,
-                cards,
-            });
-            // Inform all players to start the game with their cards
-            roomManager.sendMessage(message, player.peerID);
-        });
-
-        // Transition to game screen
-        history.push(routeURLs.GAME, {
-            playerNum: 0,
-            cards: deck.getCards(0, playerCount),
-            isHost: true,
-        });
-    };
 
     const renderTitleContent = () => {
         if (actualRoomID) {

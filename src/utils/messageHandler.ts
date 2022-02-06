@@ -5,6 +5,7 @@ import {
     PlayDiscardCardsPayload,
     PlayStraightFlushCardsPayload,
 } from '../game/lamiGame';
+import { CalculatePlayerScorePayload } from '../actions/scoreBoard';
 
 export interface IMessageHandler {
     on(type: MessageType.JOIN_ROOM, handler: (player: Player) => void): void;
@@ -30,6 +31,11 @@ export interface IMessageHandler {
         handler: (payload: PlayDiscardCardsPayload) => void
     ): void;
     on(type: MessageType.SURRENDER, handler: (playerNum: number) => void): void;
+
+    on(
+        type: MessageType.CALCULATE_PLAYER_SCORE,
+        handler: (payload: CalculatePlayerScorePayload) => void
+    ): void;
 
     on(type: MessageType.ERROR, handler: (error: Error) => void): void;
 }

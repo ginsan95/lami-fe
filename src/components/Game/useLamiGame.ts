@@ -19,10 +19,12 @@ export default function useLamiGame() {
         setSelectedCards({});
     };
 
-    const playNewStraightFlushCards = () => {
+    const playNewStraightFlushCards = (
+        insertPosition: 'start' | 'end'
+    ) => () => {
         const payload = game.newStraightFlushCardsPayload({
             cards: Object.values(selectedCards),
-            insertPosition: 'end',
+            insertPosition,
         });
         const valid = game.playStraightFlushCards(payload);
         if (valid) {

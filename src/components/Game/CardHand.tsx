@@ -97,10 +97,18 @@ const CardHand: React.FunctionComponent<CardHandProps> = (props) => {
                 <Button
                     variant="contained"
                     color="primary"
-                    onClick={playNewStraightFlushCards}
+                    onClick={playNewStraightFlushCards('start')}
                     disabled={!game.allowedToPlay}
                 >
-                    Play
+                    Play Start
+                </Button>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={playNewStraightFlushCards('end')}
+                    disabled={!game.allowedToPlay}
+                >
+                    Play End
                 </Button>
                 <Button
                     variant="contained"

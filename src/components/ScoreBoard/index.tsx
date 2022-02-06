@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { Card } from '../../models/card';
 import styles from './ScoreBoard.module.sass';
@@ -10,6 +10,7 @@ import { MessageType } from '../../models/message';
 import * as scoreBoardActions from '../../actions/scoreBoard';
 import useGameRoom from '../Room/useGameRoom';
 import routeURLs from '../Routes/urls';
+import * as cardUtils from '../../utils/cardUtils';
 
 interface LocationState {
     isHost?: boolean;
@@ -21,7 +22,6 @@ const ScoreBoard: React.FunctionComponent = () => {
     const { playerNum, cards, isHost = false } =
         useLocation<LocationState>().state ?? {};
     const history = useHistory();
-    const { players, startGame } = useGameRoom();
 
     const [allCards, setAllCards] = useState(() => {
         if (playerNum !== undefined && cards) {
@@ -31,6 +31,24 @@ const ScoreBoard: React.FunctionComponent = () => {
         }
         return [];
     });
+
+    const winnerPlayerNum = useMemo(
+        () =>
+            allCards
+                .map((cards, index) => ({ cards, index }))
+                .sort(
+                    (v1, v2) =>
+                        (v1.cards
+                            ? cardUtils.calculateScore(v1.cards)
+                            : Number.MAX_SAFE_INTEGER) -
+                        (v2.cards
+                            ? cardUtils.calculateScore(v2.cards)
+                            : Number.MAX_SAFE_INTEGER)
+                )[0]?.index,
+        [allCards]
+    );
+
+    const { players, startGame } = useGameRoom(winnerPlayerNum);
 
     const messageHandler = useRef<IMessageHandler>(new MessageHandler());
 
@@ -73,7 +91,11 @@ const ScoreBoard: React.FunctionComponent = () => {
         const handler = messageHandler.current;
 
         handler.on(MessageType.START_GAME, (payload) => {
-            const { playerNum: myPlayerNum, cards } = payload;
+            const {
+                playerNum: myPlayerNum,
+                cards,
+                startingPlayerNum,
+            } = payload;
             if (myPlayerNum !== playerNum) return;
 
             // Transition to game screen
@@ -81,6 +103,7 @@ const ScoreBoard: React.FunctionComponent = () => {
                 playerNum: myPlayerNum,
                 cards,
                 isHost,
+                startingPlayerNum,
             });
         });
     }, [isHost, history, playerNum]);

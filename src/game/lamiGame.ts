@@ -23,7 +23,7 @@ class LamiGame {
 
     playersCardCount: number[] = [];
     deadPlayers: Set<number> = new Set();
-    playerNumTurn: number = 0;
+    playerNumTurn: number;
 
     get allowedToPlay(): boolean {
         return (
@@ -44,10 +44,16 @@ class LamiGame {
         );
     }
 
-    constructor(playerNum: number, handCards: Card[], playersCount: 3 | 4 = 4) {
+    constructor(
+        playerNum: number,
+        handCards: Card[],
+        startingPlayerNum: number = 0,
+        playersCount: 3 | 4 = 4
+    ) {
         this.playerNum = playerNum;
         this.handCards = handCards;
         this.playersCount = playersCount;
+        this.playerNumTurn = startingPlayerNum;
         for (let i = 0; i < playersCount; i++) {
             this.straightFlushCards.push([]);
             this.playersCardCount.push(handCards.length);

@@ -33,6 +33,7 @@ export interface StartGamePayload {
     player: Player;
     playerNum: number;
     cards: Card[];
+    startingPlayerNum: number;
 }
 export function startGame(
     payload: StartGamePayload

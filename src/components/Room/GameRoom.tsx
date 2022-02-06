@@ -110,7 +110,7 @@ const GameRoom: React.FunctionComponent = () => {
         });
 
         handler.on(MessageType.START_GAME, (payload) => {
-            const { player, playerNum, cards } = payload;
+            const { player, playerNum, cards, startingPlayerNum } = payload;
             if (player.name !== myName) return;
 
             // Transition to game screen
@@ -118,6 +118,7 @@ const GameRoom: React.FunctionComponent = () => {
                 playerNum,
                 cards,
                 isHost,
+                startingPlayerNum,
             });
         });
     }, [isHost, myName, roomID, history, setPlayers]);

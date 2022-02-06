@@ -1,8 +1,7 @@
 import React from 'react';
 import { ButtonBase } from '@material-ui/core';
-import * as cardUtils from '../../utils/cardUtils';
 import * as cssUtils from '../../utils/cssUtils';
-import { Card } from '../../models/card';
+import { Card, CardNumber, CardSuit } from '../../models/card';
 import styles from './CardComponent.module.sass';
 
 interface CardComponentProps {
@@ -14,6 +13,68 @@ interface CardComponentProps {
     clickable?: boolean;
     selected?: boolean;
     onClick?: () => void;
+}
+
+function getCardName(card: Card): string {
+    if (card.suit === CardSuit.joker) {
+        return 'JOK';
+    }
+    let emoji = String(card.suit);
+    switch (card.suit) {
+        case CardSuit.spade: {
+            emoji = '♠️';
+            break;
+        }
+        case CardSuit.heart: {
+            emoji = '♥️';
+            break;
+        }
+        case CardSuit.club: {
+            emoji = '♣️';
+            break;
+        }
+        case CardSuit.diamond: {
+            emoji = '♦️';
+            break;
+        }
+    }
+    let letter = String(card.number);
+    switch (card.number) {
+        case CardNumber.ace: {
+            letter = 'A';
+            break;
+        }
+        case CardNumber.jack: {
+            letter = 'J';
+            break;
+        }
+        case CardNumber.queen: {
+            letter = 'Q';
+            break;
+        }
+        case CardNumber.king: {
+            letter = 'K';
+            break;
+        }
+    }
+    return letter + emoji;
+}
+
+function getColor(suit: CardSuit): string {
+    switch (suit) {
+        case CardSuit.spade:
+            return 'black';
+        case CardSuit.heart:
+            return 'crimson';
+        case CardSuit.club:
+            return 'purple';
+        case CardSuit.diamond:
+            return 'cadetblue';
+        case CardSuit.joker:
+            return 'brown';
+        default:
+            return '';
+    }
 }
 
 const CardComponent: React.FunctionComponent<CardComponentProps> = (props) => {
@@ -28,7 +89,7 @@ const CardComponent: React.FunctionComponent<CardComponentProps> = (props) => {
         onClick,
     } = props;
 
-    const description = cardUtils.getDescription(card);
+    const cardName = getCardName(card);
     // minus 2 for the border
     const actualHeight = height - 2;
     const actualWidth = width - 2;
@@ -49,12 +110,12 @@ const CardComponent: React.FunctionComponent<CardComponentProps> = (props) => {
                     height: '100%',
                     fontSize: 'larger',
                     wordBreak: 'break-all',
-                    color: cardUtils.getColor(card.suit),
+                    color: getColor(card.suit),
                 }}
                 onClick={onClick}
                 disabled={!clickable}
             >
-                {description}
+                {cardName}
             </ButtonBase>
             {selected && (
                 <div

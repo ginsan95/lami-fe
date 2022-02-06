@@ -11,7 +11,13 @@ const Routes: React.FunctionComponent = () => {
                 <Route path="/" exact>
                     <Lobby />
                 </Route>
-                <Route path={[routeURLs.GAME, routeURLs.ROOM]}>
+                <Route
+                    path={[
+                        routeURLs.GAME,
+                        routeURLs.ROOM,
+                        routeURLs.SCORE_BOARD,
+                    ]}
+                >
                     <GameRoute />
                 </Route>
             </Switch>

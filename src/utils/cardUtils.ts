@@ -204,3 +204,21 @@ export function isSameKind(cards: Card[]): boolean {
     }
     return true;
 }
+
+export function calculateScore(cards: Card[]): number {
+    return cards.reduce((total, card) => {
+        let score = card.number;
+        if (card.suit === CardSuit.joker) {
+            score = 0;
+        } else if (card.number === CardNumber.ace) {
+            score = 15; // Ace is calculate as 15.
+        } else if (
+            card.number === CardNumber.jack ||
+            card.number === CardNumber.queen ||
+            card.number === CardNumber.king
+        ) {
+            score = 10; // Pictures are all 10.
+        }
+        return total + score;
+    }, 0);
+}

@@ -36,6 +36,14 @@ class LamiGame {
         return this.straightFlushCards[this.playerNum].length === 0;
     }
 
+    get isGameFinished(): boolean {
+        // Game is finished when all players surrendered or 1 player finished all cards.
+        return (
+            this.deadPlayers.size === this.playersCount ||
+            this.playersCardCount.includes(0)
+        );
+    }
+
     constructor(playerNum: number, handCards: Card[], playersCount: 3 | 4 = 4) {
         this.playerNum = playerNum;
         this.handCards = handCards;

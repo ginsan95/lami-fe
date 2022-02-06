@@ -5,7 +5,13 @@ import * as gameActions from '../../actions/game';
 
 export default function useLamiGame() {
     const context = useContext(LamiGameContext);
-    const { game, nextTurn, selectedCards, setSelectedCards } = context;
+    const {
+        game,
+        nextTurn,
+        endGameIfPossible,
+        selectedCards,
+        setSelectedCards,
+    } = context;
 
     const { playerNum } = game;
 
@@ -25,6 +31,7 @@ export default function useLamiGame() {
             roomManager.sendMessage(
                 gameActions.playStraightFlushCards(payload)
             );
+            endGameIfPossible();
         }
     };
 
@@ -44,6 +51,7 @@ export default function useLamiGame() {
             roomManager.sendMessage(
                 gameActions.playStraightFlushCards(payload)
             );
+            endGameIfPossible();
         }
     };
 
@@ -57,6 +65,7 @@ export default function useLamiGame() {
             resetSelection();
             nextTurn();
             roomManager.sendMessage(gameActions.playDiscardCards(payload));
+            endGameIfPossible();
         }
     };
 
@@ -64,6 +73,7 @@ export default function useLamiGame() {
         game.surrender(game.playerNum);
         nextTurn();
         roomManager.sendMessage(gameActions.surrender(game.playerNum));
+        endGameIfPossible();
     };
 
     return {

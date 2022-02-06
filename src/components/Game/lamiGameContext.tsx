@@ -5,6 +5,8 @@ import MessageHandler, { IMessageHandler } from '../../utils/messageHandler';
 import roomManager from '../../utils/roomManager2';
 import { MessageType } from '../../models/message';
 import * as gameActions from '../../actions/game';
+import { useHistory } from 'react-router-dom';
+import routeURLs from '../Routes/urls';
 
 type SelectedCards = {
     [key: string]: KeyedCard;
@@ -14,6 +16,7 @@ export interface ILamiGameContext {
     game: LamiGame;
     round: number;
     nextTurn: () => void;
+    endGameIfPossible: () => void;
     selectedCards: SelectedCards;
     setSelectedCards: React.Dispatch<React.SetStateAction<SelectedCards>>;
 }
@@ -22,6 +25,7 @@ export const LamiGameContext = React.createContext<ILamiGameContext>({
     game: new LamiGame(0, []),
     round: 1,
     nextTurn: () => {},
+    endGameIfPossible: () => {},
     selectedCards: {},
     setSelectedCards: () => {},
 });
@@ -41,12 +45,24 @@ export const LamiGameProvider: React.FunctionComponent<LamiGameProviderProps> = 
     const [round, setRound] = useState(1);
     const [selectedCards, setSelectedCards] = useState({});
 
+    const history = useHistory();
+
     const nextTurn = useCallback(() => {
         // Change the player turn.
         game.nextTurn();
         // Increase the round to regenerate the UI.
         setRound((round) => round + 1);
     }, [game]);
+
+    const endGameIfPossible = useCallback(() => {
+        if (!game.isGameFinished) return;
+        // Transition to score board screen
+        history.push(routeURLs.GAME, {
+            playerNum: game.playerNum,
+            cards: game.handCards,
+            isHost,
+        });
+    }, [game, history, isHost]);
 
     const messageHandler = useRef<IMessageHandler>(new MessageHandler());
 
@@ -71,6 +87,7 @@ export const LamiGameProvider: React.FunctionComponent<LamiGameProviderProps> = 
                     gameActions.playStraightFlushCards(payload)
                 );
             }
+            endGameIfPossible();
         });
 
         handler.on(MessageType.PLAY_DISCARD_CARDS, (payload) => {
@@ -82,6 +99,7 @@ export const LamiGameProvider: React.FunctionComponent<LamiGameProviderProps> = 
             if (isHost) {
                 roomManager.sendMessage(gameActions.playDiscardCards(payload));
             }
+            endGameIfPossible();
         });
 
         handler.on(MessageType.SURRENDER, (surrenderPlayerNum) => {
@@ -95,8 +113,9 @@ export const LamiGameProvider: React.FunctionComponent<LamiGameProviderProps> = 
                     gameActions.surrender(surrenderPlayerNum)
                 );
             }
+            endGameIfPossible();
         });
-    }, [isHost, playerNum, game, nextTurn]);
+    }, [isHost, playerNum, game, nextTurn, endGameIfPossible]);
 
     return (
         <LamiGameContext.Provider
@@ -104,6 +123,7 @@ export const LamiGameProvider: React.FunctionComponent<LamiGameProviderProps> = 
                 game,
                 round,
                 nextTurn,
+                endGameIfPossible,
                 selectedCards,
                 setSelectedCards,
             }}

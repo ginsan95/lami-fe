@@ -106,7 +106,9 @@ const CardHand: React.FunctionComponent<CardHandProps> = (props) => {
                     variant="contained"
                     color="primary"
                     onClick={discardCards}
-                    disabled={!game.allowedToPlay}
+                    disabled={
+                        !game.allowedToPlay || game.isMyStraightFlushEmpty // 1st round must be straight flush.
+                    }
                 >
                     Discard
                 </Button>

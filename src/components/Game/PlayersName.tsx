@@ -26,13 +26,17 @@ const Name: React.FunctionComponent<NameProps> = (props) => {
 
     const tableNum = game.getTableNumber(position);
     const name = `${players[tableNum]?.name} (${game.playersCardCount[tableNum]})`;
+    let color: string | undefined = undefined;
+    if (game.deadPlayers.has(tableNum)) {
+        color = 'gray';
+    } else if (game.playerNumTurn === tableNum) {
+        color = 'green';
+    }
 
     return (
         <div
             className={className}
-            style={
-                game.playerNumTurn === tableNum ? { color: 'green' } : undefined
-            }
+            style={color !== undefined ? { color } : undefined}
         >
             {name}
         </div>

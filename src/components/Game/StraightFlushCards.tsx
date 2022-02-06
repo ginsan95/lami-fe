@@ -80,7 +80,9 @@ const StraightFlushCards: React.FunctionComponent<StraightFlushCardsProps> = (
                             const clickable =
                                 cards.length < allCardNumbers.length &&
                                 card.number !== CardNumber.ace &&
-                                (index === 0 || index === cards.length - 1);
+                                (index === 0 || index === cards.length - 1) &&
+                                game.allowedToPlay &&
+                                !game.isMyStraightFlushEmpty;
                             const onClick = () => {
                                 if (clickable) {
                                     handleClick(

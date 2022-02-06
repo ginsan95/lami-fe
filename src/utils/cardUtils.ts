@@ -10,7 +10,65 @@ import {
 const minCardCombo = 3;
 
 export function getDescription(card: Card): string {
-    return `${card.number}-${card.suit}`;
+    if (card.suit === CardSuit.joker) {
+        return 'JOK';
+    }
+    let emoji = String(card.suit);
+    switch (card.suit) {
+        case CardSuit.spade: {
+            emoji = '♠️';
+            break;
+        }
+        case CardSuit.heart: {
+            emoji = '♥️';
+            break;
+        }
+        case CardSuit.club: {
+            emoji = '♣️';
+            break;
+        }
+        case CardSuit.diamond: {
+            emoji = '♦️';
+            break;
+        }
+    }
+    let letter = String(card.number);
+    switch (card.number) {
+        case CardNumber.ace: {
+            letter = 'A';
+            break;
+        }
+        case CardNumber.jack: {
+            letter = 'J';
+            break;
+        }
+        case CardNumber.queen: {
+            letter = 'Q';
+            break;
+        }
+        case CardNumber.king: {
+            letter = 'K';
+            break;
+        }
+    }
+    return letter + emoji;
+}
+
+export function getColor(suit: CardSuit): string {
+    switch (suit) {
+        case CardSuit.spade:
+            return 'black';
+        case CardSuit.heart:
+            return 'crimson';
+        case CardSuit.club:
+            return 'purple';
+        case CardSuit.diamond:
+            return 'cadetblue';
+        case CardSuit.joker:
+            return 'brown';
+        default:
+            return '';
+    }
 }
 
 export function compare(card1: Card, card2: Card): number {

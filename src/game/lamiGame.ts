@@ -32,6 +32,10 @@ class LamiGame {
         );
     }
 
+    get isMyStraightFlushEmpty(): boolean {
+        return this.straightFlushCards[this.playerNum].length === 0;
+    }
+
     constructor(playerNum: number, handCards: Card[], playersCount: 3 | 4 = 4) {
         this.playerNum = playerNum;
         this.handCards = handCards;
@@ -89,6 +93,7 @@ class LamiGame {
         const { tableNum, row } = table;
 
         if (tableNum >= this.straightFlushCards.length) return false;
+        if (cards.length === 0) return false;
 
         const currentCards: Card[] =
             this.straightFlushCards[tableNum][row] ?? [];

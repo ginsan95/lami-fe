@@ -44,7 +44,13 @@ const CardComponent: React.FunctionComponent<CardComponentProps> = (props) => {
             className={cssUtils.joinClassNames(styles.card_holder, className)}
         >
             <ButtonBase
-                style={{ width: '100%', height: '100%' }}
+                style={{
+                    width: '100%',
+                    height: '100%',
+                    fontSize: 'larger',
+                    wordBreak: 'break-all',
+                    color: cardUtils.getColor(card.suit),
+                }}
                 onClick={onClick}
                 disabled={!clickable}
             >

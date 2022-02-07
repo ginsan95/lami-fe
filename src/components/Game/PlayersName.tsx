@@ -3,11 +3,18 @@ import styles from './PlayersName.module.sass';
 import { GameRoomContext } from '../Room/gameRoomContext';
 import useLamiGame from './useLamiGame';
 
-const PlayersName: React.FunctionComponent = () => {
+interface PlayersNameProps {
+    playersCount: number;
+}
+
+const PlayersName: React.FunctionComponent<PlayersNameProps> = (props) => {
+    const { playersCount } = props;
     return (
         <div className={styles.container}>
             <Name position="top" className={styles.top} />
-            <Name position="left" className={styles.left} />
+            {playersCount >= 4 && (
+                <Name position="left" className={styles.left} />
+            )}
             <Name position="bottom" className={styles.bottom} />
             <Name position="right" className={styles.right} />
         </div>

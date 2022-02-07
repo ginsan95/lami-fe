@@ -15,17 +15,17 @@ export default function useGameRoom(winnerPlayerNum?: number) {
     const startGame = () => {
         // Create new deck.
         const deck = new Deck();
-        const playerCount: 3 | 4 = players.length as any;
+        const playersCount: 3 | 4 = players.length as any;
 
         let startingPlayerNum = 0;
         if (winnerPlayerNum !== undefined) {
-            startingPlayerNum = (winnerPlayerNum + 1) % playerCount;
+            startingPlayerNum = (winnerPlayerNum + 1) % playersCount;
         }
 
         players.forEach((player, index) => {
             // Ignore for host
             if (player.isHost) return;
-            const cards = deck.getCards(index, playerCount);
+            const cards = deck.getCards(index, playersCount);
             const message = gameRoomActions.startGame({
                 player,
                 playerNum: index,
@@ -39,9 +39,10 @@ export default function useGameRoom(winnerPlayerNum?: number) {
         // Transition to game screen
         history.push(routeURLs.GAME, {
             playerNum: 0,
-            cards: deck.getCards(0, playerCount),
+            cards: deck.getCards(0, playersCount),
             isHost: true,
             startingPlayerNum,
+            playersCount,
         });
     };
 

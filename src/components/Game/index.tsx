@@ -11,15 +11,21 @@ interface LocationState {
     playerNum?: number;
     cards?: Card[];
     startingPlayerNum?: number;
+    playersCount?: 3 | 4;
 }
 
 const Game: React.FunctionComponent = () => {
-    const { playerNum, cards, startingPlayerNum = 0, isHost = false } =
-        useLocation<LocationState>().state ?? {};
+    const {
+        playerNum,
+        cards,
+        startingPlayerNum = 0,
+        isHost = false,
+        playersCount,
+    } = useLocation<LocationState>().state ?? {};
 
     const lamiGame = useRef<LamiGame | undefined>(
         playerNum !== undefined && cards
-            ? new LamiGame(playerNum, cards, startingPlayerNum)
+            ? new LamiGame(playerNum, cards, startingPlayerNum, playersCount)
             : undefined
     );
 

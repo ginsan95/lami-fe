@@ -49,6 +49,7 @@ const ScoreBoard: React.FunctionComponent = () => {
     );
 
     const { players, startGame } = useGameRoom(winnerPlayerNum);
+    const playersCount = players.length;
 
     const messageHandler = useRef<IMessageHandler>(new MessageHandler());
 
@@ -104,9 +105,10 @@ const ScoreBoard: React.FunctionComponent = () => {
                 cards,
                 isHost,
                 startingPlayerNum,
+                playersCount,
             });
         });
-    }, [isHost, history, playerNum]);
+    }, [isHost, history, playerNum, playersCount]);
 
     const isAllReady =
         allCards.filter((cards) => cards).length === players.length;

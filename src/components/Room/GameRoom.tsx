@@ -39,6 +39,7 @@ const GameRoom: React.FunctionComponent = () => {
     const [myName, setMyName] = useState<string>(stateName ?? getRandomName());
 
     const { players, setPlayers, startGame } = useGameRoom();
+    const playersCount = players.length;
 
     // Setup initial player for host
     useEffect(() => {
@@ -119,9 +120,10 @@ const GameRoom: React.FunctionComponent = () => {
                 cards,
                 isHost,
                 startingPlayerNum,
+                playersCount,
             });
         });
-    }, [isHost, myName, roomID, history, setPlayers]);
+    }, [isHost, myName, roomID, history, setPlayers, playersCount]);
 
     // Error message handler
     useEffect(() => {
@@ -211,7 +213,7 @@ const GameRoom: React.FunctionComponent = () => {
                     <Button
                         variant="contained"
                         color="primary"
-                        disabled={players.length !== 4}
+                        disabled={players.length < 3}
                         onClick={startGame}
                     >
                         Start Game

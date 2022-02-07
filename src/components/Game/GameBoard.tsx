@@ -12,12 +12,14 @@ const GameBoard: React.FunctionComponent = () => {
 
     return (
         <div className={styles.container}>
-            <StraightFlushCards
-                tableNum={game.getTableNumber('left')}
-                height="100%"
-                width={verticalWidth}
-                position="left"
-            />
+            {game.playersCount >= 4 && (
+                <StraightFlushCards
+                    tableNum={game.getTableNumber('left')}
+                    height="100%"
+                    width={verticalWidth}
+                    position="left"
+                />
+            )}
             <div className={styles.center_area}>
                 <StraightFlushCards
                     tableNum={game.getTableNumber('top')}

@@ -20,7 +20,7 @@ const DiscardedCards: React.FunctionComponent = () => {
 
     return (
         <div className={styles.container}>
-            <PlayersName />
+            <PlayersName playersCount={game.playersCount} />
             {sortedCards.map((cards, index) => (
                 <MyCards
                     key={cards ? cards[0].number : index}

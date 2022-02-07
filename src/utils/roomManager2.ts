@@ -30,17 +30,22 @@ class RoomManager2 {
 
     joinRoom = async (roomID: string): Promise<void> => {
         await this.initializePeer();
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
             const connection = this.peer.connect(roomID);
             this.connections[connection.peer] = connection;
             this.listenToMessage(connection);
             connection.on('open', () => {
                 resolve();
             });
+            connection.on('error', (error) => {
+                console.error('Connection error', error);
+                reject(error);
+            });
         });
     };
 
     sendMessage = (message: any, peerID?: string) => {
+        console.log('send', message, peerID);
         if (peerID) {
             // Send to specific peer if available
             this.connections[peerID]?.send(message);

@@ -16,6 +16,7 @@ import * as gameRoomActions from '../../actions/gameRoom';
 import { getRandomName } from '../../constants/names';
 import routeURLs from '../Routes/urls';
 import useGameRoom from './useGameRoom';
+import { getLocalStorage } from '../../utils/storageUtils';
 
 interface RouteParams {
     roomID: string;
@@ -36,7 +37,9 @@ const GameRoom: React.FunctionComponent = () => {
     const [actualRoomID, setActualRoomID] = useState<string | undefined>();
     const [error, setError] = useState<Error | undefined>();
 
-    const [myName, setMyName] = useState<string>(stateName ?? getRandomName());
+    const [myName, setMyName] = useState<string>(
+        stateName ?? getLocalStorage('name') ?? getRandomName()
+    );
 
     const { players, setPlayers, startGame } = useGameRoom();
     const playersCount = players.length;

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Button, Divider, Paper, TextField } from '@material-ui/core';
 import styles from './Lobby.module.sass';
-import { getLocalStorage } from '../../utils/storageUtils';
+import { getLocalStorage, saveLocalStorage } from '../../utils/storageUtils';
 import { getRandomName } from '../../constants/names';
 import routeURLs from '../Routes/urls';
 
@@ -20,6 +20,7 @@ const Lobby: React.FunctionComponent = () => {
     const handleStartGame = (isHost: boolean) => {
         const myRoomID = isHost ? 'host' : roomID;
         const path = routeURLs.ROOM.replace(':roomID', myRoomID);
+        saveLocalStorage('name', name);
         history.push(path, { name });
     };
 

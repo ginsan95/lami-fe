@@ -81,13 +81,13 @@ export const LamiGameProvider: React.FunctionComponent<LamiGameProviderProps> = 
             // Play this cards in my game instant.
             game.playStraightFlushCards(payload);
             nextTurn();
+            endGameIfPossible();
             // Inform other players about this for host.
             if (isHost) {
                 roomManager.sendMessage(
                     gameActions.playStraightFlushCards(payload)
                 );
             }
-            endGameIfPossible();
         });
 
         handler.on(MessageType.PLAY_DISCARD_CARDS, (payload) => {
@@ -95,11 +95,11 @@ export const LamiGameProvider: React.FunctionComponent<LamiGameProviderProps> = 
             // Play this cards in my game instant.
             game.playDiscardCards(payload);
             nextTurn();
+            endGameIfPossible();
             // Inform other players about this for host.
             if (isHost) {
                 roomManager.sendMessage(gameActions.playDiscardCards(payload));
             }
-            endGameIfPossible();
         });
 
         handler.on(MessageType.SURRENDER, (surrenderPlayerNum) => {
@@ -107,13 +107,13 @@ export const LamiGameProvider: React.FunctionComponent<LamiGameProviderProps> = 
             // Surrender in my game instant.
             game.surrender(surrenderPlayerNum);
             nextTurn();
+            endGameIfPossible();
             // Inform other players about this for host.
             if (isHost) {
                 roomManager.sendMessage(
                     gameActions.surrender(surrenderPlayerNum)
                 );
             }
-            endGameIfPossible();
         });
     }, [isHost, playerNum, game, nextTurn, endGameIfPossible]);
 

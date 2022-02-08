@@ -51,6 +51,11 @@ const ScoreBoard: React.FunctionComponent = () => {
     const { players, startGame } = useGameRoom(winnerPlayerNum);
     const playersCount = players.length;
 
+    const isAllReady = useMemo(
+        () => allCards.filter((cards) => cards).length === playersCount,
+        [allCards, playersCount]
+    );
+
     const messageHandler = useRef<IMessageHandler>(new MessageHandler());
 
     // Setup message handler && send initial message.
@@ -76,14 +81,24 @@ const ScoreBoard: React.FunctionComponent = () => {
                 newCards[payload.playerNum] = payload.cards;
                 return newCards;
             });
-            // Inform other players about this for host.
-            if (isHost) {
-                roomManager.sendMessage(
-                    scoreBoardActions.calculatePlayerScore(payload)
-                );
-            }
         });
     }, [isHost, playerNum]);
+
+    // Host message handler
+    useEffect(() => {
+        if (!isHost || !isAllReady) return;
+        // Wait until all cards are available then only inform the clients.
+        // Prevent cases where clients haven't reach this page yet.
+        allCards.forEach((cards, index) => {
+            if (index === playerNum) return; // Ignore for host player num.
+            roomManager.sendMessage(
+                scoreBoardActions.calculatePlayerScore({
+                    playerNum: index,
+                    cards,
+                })
+            );
+        });
+    }, [allCards, isAllReady, isHost, playerNum]);
 
     // Client message handler
     useEffect(() => {
@@ -109,9 +124,6 @@ const ScoreBoard: React.FunctionComponent = () => {
             });
         });
     }, [isHost, history, playerNum, playersCount]);
-
-    const isAllReady =
-        allCards.filter((cards) => cards).length === players.length;
 
     return (
         <div className={styles.container}>

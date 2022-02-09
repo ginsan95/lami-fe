@@ -1,9 +1,8 @@
 import React, { useRef } from 'react';
-import { allCardNumbers, CardNumber } from '../../models/card';
-import CardComponent from './CardComponent';
 import styles from './StraightFlushCards.module.sass';
 import useContainerSize from '../../hooks/useContainerSize';
 import useLamiGame from './useLamiGame';
+import StraightFlushCardsRow from './StraightFlushCardsRow';
 
 type Position = 'top' | 'left' | 'right' | 'bottom';
 
@@ -75,35 +74,13 @@ const StraightFlushCards: React.FunctionComponent<StraightFlushCardsProps> = (
         <div ref={containerRef} style={{ width, height, position: 'relative' }}>
             <div className={styles.multi_cards_container} style={style}>
                 {playedCards.map((cards, row) => (
-                    <div key={row} className={styles.cards_container}>
-                        {cards.map((card, index) => {
-                            const clickable =
-                                cards.length < allCardNumbers.length &&
-                                card.number !== CardNumber.ace &&
-                                (index === 0 || index === cards.length - 1) &&
-                                game.allowedToPlay &&
-                                !game.isMyStraightFlushEmpty;
-                            const onClick = () => {
-                                if (clickable) {
-                                    handleClick(
-                                        row,
-                                        index === 0 ? 'start' : 'end'
-                                    );
-                                }
-                            };
-
-                            return (
-                                <CardComponent
-                                    key={card.number}
-                                    card={card}
-                                    height={50}
-                                    width={30}
-                                    clickable={clickable}
-                                    onClick={onClick}
-                                />
-                            );
-                        })}
-                    </div>
+                    <StraightFlushCardsRow
+                        key={row}
+                        game={game}
+                        cards={cards}
+                        row={row}
+                        onClick={handleClick}
+                    />
                 ))}
             </div>
         </div>

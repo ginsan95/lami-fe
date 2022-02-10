@@ -13,29 +13,6 @@ interface StraightFlushCardsRowProps {
     onClick: (row: number, insertPosition: 'start' | 'end') => void;
 }
 
-// This will mutate the current array and return the deleted joker count.
-function removeStartAndEndJokers(
-    cards: Card[]
-): { startJokers: number; endJokers: number } {
-    if (cards.length === 0) return { startJokers: 0, endJokers: 0 };
-    let startJokers = 0;
-    let endJokers = 0;
-    // Remove start.
-    while (cards.length > 0 && cards[0].suit === CardSuit.joker) {
-        cards.splice(0, 1);
-        startJokers++;
-    }
-    // Remove end.
-    while (
-        cards.length > 0 &&
-        cards[cards.length - 1].suit === CardSuit.joker
-    ) {
-        cards.splice(-1, 1);
-        endJokers++;
-    }
-    return { startJokers, endJokers };
-}
-
 const StraightFlushCardsRow: React.FunctionComponent<StraightFlushCardsRowProps> = (
     props
 ) => {
@@ -61,8 +38,10 @@ const StraightFlushCardsRow: React.FunctionComponent<StraightFlushCardsRowProps>
         const newCardsCount = cards.length - myPrevCards.length;
         if (newCardsCount > 0) {
             const myCards = [...cards];
-            const jokerCounts = removeStartAndEndJokers(myCards);
-            const prevJokerCounts = removeStartAndEndJokers(myPrevCards);
+            const jokerCounts = cardUtils.removeStartAndEndJokers(myCards);
+            const prevJokerCounts = cardUtils.removeStartAndEndJokers(
+                myPrevCards
+            );
 
             if (jokerCounts.startJokers > prevJokerCounts.startJokers) {
                 // More jokers at start, so it's append at start.

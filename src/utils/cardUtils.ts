@@ -117,15 +117,23 @@ export function isStraightFlush(
         myInsertPosition = 'start';
     }
 
-    for (let i = 0; i < jokerCount; i++) {
-        if (myInsertPosition === 'start') {
-            newCards.splice(0, 0, getJokerCard());
-        } else if (myInsertPosition === 'end') {
-            newCards.push(getJokerCard());
-        }
-    }
+    addJokersToCards(newCards, jokerCount, myInsertPosition);
 
     return { valid: true, cards: newCards };
+}
+
+function addJokersToCards(
+    cards: Card[],
+    jokerCount: number,
+    insertPosition: 'start' | 'end'
+) {
+    for (let i = 0; i < jokerCount; i++) {
+        if (insertPosition === 'start') {
+            cards.splice(0, 0, getJokerCard());
+        } else if (insertPosition === 'end') {
+            cards.push(getJokerCard());
+        }
+    }
 }
 
 export function isSameKind(cards: Card[]): boolean {
@@ -145,6 +153,66 @@ export function isSameKind(cards: Card[]): boolean {
         }
     }
     return true;
+}
+
+export function readjustJokersIfNeeded(
+    cards: Card[],
+    prevCards: Card[],
+    insertPosition: 'start' | 'end'
+): Card[] {
+    if (cards.length === prevCards.length) return cards; // No changes
+
+    const myCards = [...cards];
+    const myPrevCards = [...prevCards];
+    const jokerCounts = removeStartAndEndJokers(myCards);
+    const prevJokerCounts = removeStartAndEndJokers(myPrevCards);
+    let totalJokerCount = jokerCounts.startJokers + jokerCounts.endJokers;
+
+    if (
+        prevJokerCounts.startJokers > 0 &&
+        compare(myCards[0], myPrevCards[0]) === 0
+    ) {
+        addJokersToCards(myCards, prevJokerCounts.startJokers, 'start');
+        totalJokerCount -= prevJokerCounts.startJokers;
+    }
+    if (
+        prevJokerCounts.endJokers > 0 &&
+        compare(
+            myCards[myCards.length - 1],
+            myPrevCards[myPrevCards.length - 1]
+        ) === 0
+    ) {
+        addJokersToCards(myCards, prevJokerCounts.endJokers, 'end');
+        totalJokerCount -= prevJokerCounts.endJokers;
+    }
+    if (totalJokerCount > 0) {
+        addJokersToCards(myCards, totalJokerCount, insertPosition);
+    }
+
+    return myCards;
+}
+
+// This will mutate the current array and return the deleted joker count.
+export function removeStartAndEndJokers(
+    cards: Card[]
+): { startJokers: number; endJokers: number } {
+    if (cards.length === 0) return { startJokers: 0, endJokers: 0 };
+    let startJokers = 0;
+    let endJokers = 0;
+    // Remove start.
+    while (cards.length > 0 && cards[0].suit === CardSuit.joker) {
+        cards.splice(0, 1);
+        startJokers++;
+    }
+    // Remove end.
+    while (
+        cards.length > 0 &&
+        cards[cards.length - 1].suit === CardSuit.joker
+    ) {
+        cards.splice(-1, 1);
+        endJokers++;
+    }
+    return { startJokers, endJokers };
 }
 
 export function calculateScore(cards: Card[]): number {

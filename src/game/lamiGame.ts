@@ -113,13 +113,15 @@ class LamiGame {
             this.straightFlushCards[tableNum][row] ?? [];
         const combinedCards = [...currentCards, ...cards];
 
-        const { valid, cards: newCards } = cardUtils.isStraightFlush(
-            combinedCards,
+        const result = cardUtils.isStraightFlush(combinedCards, insertPosition);
+
+        if (!result.valid) return false;
+
+        const newCards = cardUtils.readjustJokersIfNeeded(
+            result.cards,
+            currentCards,
             insertPosition
         );
-
-        if (!valid) return false;
-
         this.straightFlushCards[tableNum][row] = newCards;
         this.reducePlayerCards(playerNum, cards);
         this.reducePlayerCardsCount(playerNum, cards.length);

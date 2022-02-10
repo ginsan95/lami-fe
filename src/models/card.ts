@@ -37,12 +37,19 @@ export interface Card {
 }
 
 let currentJokerNumber = 0;
+let shouldUniqueJoker = true;
+
+export function setShouldUniqueJoker(unique: boolean) {
+    shouldUniqueJoker = unique;
+}
 
 export function getJokerCard(): Card {
     const card = {
         number: currentJokerNumber,
         suit: CardSuit.joker,
     };
-    currentJokerNumber -= 1; // Ensure joker always unique
+    if (shouldUniqueJoker) {
+        currentJokerNumber -= 1; // Ensure joker always unique
+    }
     return card;
 }

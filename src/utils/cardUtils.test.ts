@@ -5,6 +5,7 @@ import {
     CardNumber,
     CardSuit,
     getJokerCard,
+    setShouldUniqueJoker,
 } from '../models/card';
 import { compare, isSameKind, isStraightFlush } from './cardUtils';
 
@@ -17,6 +18,10 @@ function makeAceCards(suits: CardSuit[]): Card[] {
 }
 
 describe('cardUtils', () => {
+    beforeEach(() => {
+        setShouldUniqueJoker(false);
+    });
+
     test('card comparison', () => {
         const fourOfDiamond: Card = {
             number: CardNumber.four,

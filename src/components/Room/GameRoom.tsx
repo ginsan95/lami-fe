@@ -169,9 +169,20 @@ const GameRoom: React.FunctionComponent = () => {
         action().catch((error) => console.error(error));
     }, [isHost, roomID, myName, actualRoomID]);
 
+    const copyRoomURL = () => {
+        const path = routeURLs.ROOM.replace(':roomID', actualRoomID || '');
+        const url = window.location.origin + path;
+        navigator.clipboard.writeText(url);
+    };
+
     const renderTitleContent = () => {
         if (actualRoomID) {
-            return `Room: ${actualRoomID}`;
+            return (
+                <>
+                    <span>Room: {actualRoomID}</span>
+                    <Button onClick={copyRoomURL}>Link</Button>
+                </>
+            );
         }
         if (error) {
             return `Failed to connect: ${error.message}`;

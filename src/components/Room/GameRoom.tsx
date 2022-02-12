@@ -1,11 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
-import {
-    Button,
-    CircularProgress,
-    List,
-    ListItemText,
-} from '@material-ui/core';
+import { Button, CircularProgress, List, ListItemText } from '@mui/material';
 
 import roomManager from '../../utils/roomManager2';
 import { Player } from '../../models/player';

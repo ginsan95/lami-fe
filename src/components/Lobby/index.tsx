@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Button, Divider, Paper, TextField } from '@material-ui/core';
+import { Button, Divider, Paper, TextField } from '@mui/material';
 import styles from './Lobby.module.sass';
 import { getLocalStorage, saveLocalStorage } from '../../utils/storageUtils';
 import { getRandomName } from '../../constants/names';

@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { Card } from '../../models/card';
 import styles from './ScoreBoard.module.sass';
-import { Button, Divider, Paper } from '@material-ui/core';
+import { Button, Divider, Paper } from '@mui/material';
 import PlayersScore from './PlayersScore';
 import MessageHandler, { IMessageHandler } from '../../utils/messageHandler';
 import roomManager from '../../utils/roomManager2';

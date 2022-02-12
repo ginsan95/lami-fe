@@ -1,5 +1,5 @@
 import React, { useCallback, useRef, useState } from 'react';
-import { Button, Dialog, DialogTitle } from '@material-ui/core';
+import { Button, Dialog, DialogTitle } from '@mui/material';
 import { Card } from '../../models/card';
 import * as cardUtils from '../../utils/cardUtils';
 import styles from './CardHand.module.sass';
@@ -122,16 +122,24 @@ const CardHand: React.FunctionComponent<CardHandProps> = (props) => {
                 </Button>
                 <Button
                     variant="contained"
-                    color="secondary"
+                    color="error"
                     onClick={() => setIsSurrenderOpen(true)}
                     disabled={!game.allowedToPlay}
                 >
                     Surrender
                 </Button>
-                <Button variant="contained" onClick={resetSelection}>
+                <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={resetSelection}
+                >
                     Reset Selection
                 </Button>
-                <Button variant="contained" onClick={changeSort}>
+                <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={changeSort}
+                >
                     Change Sort
                 </Button>
             </div>

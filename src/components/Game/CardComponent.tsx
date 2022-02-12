@@ -1,5 +1,5 @@
 import React from 'react';
-import { ButtonBase } from '@material-ui/core';
+import { ButtonBase } from '@mui/material';
 import * as cssUtils from '../../utils/cssUtils';
 import { Card, CardNumber, CardSuit } from '../../models/card';
 import styles from './CardComponent.module.sass';

@@ -48,7 +48,9 @@ const ScoreBoard: React.FunctionComponent = () => {
         [allCards]
     );
 
-    const { players, startGame } = useGameRoom(winnerPlayerNum);
+    const { players, startGame, totalWins, setTotalWins } = useGameRoom(
+        winnerPlayerNum
+    );
     const playersCount = players.length;
 
     const isAllReady = useMemo(
@@ -125,12 +127,27 @@ const ScoreBoard: React.FunctionComponent = () => {
         });
     }, [isHost, history, playerNum, playersCount]);
 
+    // Increase the number of wins for the winner.
+    useEffect(() => {
+        if (!isAllReady) return;
+        setTotalWins((totalWins) => {
+            const newTotalWins = [...totalWins];
+            newTotalWins[winnerPlayerNum] =
+                (newTotalWins[winnerPlayerNum] ?? 0) + 1;
+            return newTotalWins;
+        });
+    }, [winnerPlayerNum, isAllReady, setTotalWins]);
+
     return (
         <div className={styles.container}>
             <Paper elevation={2} className={styles.content_container}>
                 <h1>Score Board</h1>
                 <Divider style={{ marginTop: 20, marginBottom: 20 }} />
-                <PlayersScore players={players} allCards={allCards} />
+                <PlayersScore
+                    players={players}
+                    allCards={allCards}
+                    totalWins={totalWins}
+                />
                 <Divider style={{ marginTop: 20, marginBottom: 20 }} />
                 {isHost && (
                     <Button

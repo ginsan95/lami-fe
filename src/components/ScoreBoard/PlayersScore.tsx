@@ -9,10 +9,11 @@ import styles from './ScoreBoard.module.sass';
 interface PlayersScoreProps {
     allCards: (Card[] | undefined)[];
     players: Player[];
+    totalWins: number[];
 }
 
 const PlayersScore: React.FunctionComponent<PlayersScoreProps> = (props) => {
-    const { allCards, players } = props;
+    const { allCards, players, totalWins } = props;
 
     const sortedItems = useMemo(
         () =>
@@ -23,13 +24,14 @@ const PlayersScore: React.FunctionComponent<PlayersScoreProps> = (props) => {
                     score: allCards[index]
                         ? cardUtils.calculateScore(allCards[index] || [])
                         : undefined,
+                    totalWin: totalWins[index],
                 }))
                 .sort(
                     (item1, item2) =>
                         (item1.score ?? Number.MAX_SAFE_INTEGER) -
                         (item2.score ?? Number.MAX_SAFE_INTEGER)
                 ),
-        [players, allCards]
+        [players, allCards, totalWins]
     );
 
     return (
@@ -40,6 +42,7 @@ const PlayersScore: React.FunctionComponent<PlayersScoreProps> = (props) => {
                     name={item.name}
                     cards={item.cards}
                     score={item.score}
+                    totalWin={item.totalWin}
                 />
             ))}
         </>
@@ -50,14 +53,15 @@ interface PlayersScoreItemProps {
     name: String;
     cards?: Card[];
     score?: number;
+    totalWin?: number;
 }
 
 const PlayersScoreItem: React.FunctionComponent<PlayersScoreItemProps> = (
     props
 ) => {
-    const { name, cards, score } = props;
+    const { name, cards, score, totalWin } = props;
     const scoreText = score !== undefined ? String(score) : 'pending';
-    const title = `${name} (${scoreText})`;
+    const title = `${name} [Score: ${scoreText} | Total win: ${totalWin ?? 0}]`;
 
     const keyedCards = useKeyedCards(cards ?? [], cardUtils.compare);
 

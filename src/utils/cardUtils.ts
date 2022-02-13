@@ -27,9 +27,9 @@ const aceToTwoComparisonValue = compare(
 export function isStraightFlush(
     cards: Card[],
     insertPosition: 'start' | 'end' = 'end'
-): { valid: boolean; cards: Card[] } {
+): { valid: boolean; cards: Card[]; insertPosition: 'start' | 'end' } {
     if (cards.length < minCardCombo || cards.length > allCardNumbers.length) {
-        return { valid: false, cards: [] };
+        return { valid: false, cards: [], insertPosition };
     }
 
     const myCards = cards
@@ -77,7 +77,7 @@ export function isStraightFlush(
         }
 
         if (card2.number !== CardNumber.ace || i !== myCards.length - 1) {
-            return { valid: false, cards: [] };
+            return { valid: false, cards: [], insertPosition };
         }
 
         diff = compare(card2, firstCard);
@@ -94,7 +94,7 @@ export function isStraightFlush(
             continue;
         }
 
-        return { valid: false, cards: [] };
+        return { valid: false, cards: [], insertPosition };
     }
 
     const newCards = [...myCards];
@@ -119,7 +119,7 @@ export function isStraightFlush(
 
     addJokersToCards(newCards, jokerCount, myInsertPosition);
 
-    return { valid: true, cards: newCards };
+    return { valid: true, cards: newCards, insertPosition: myInsertPosition };
 }
 
 function addJokersToCards(

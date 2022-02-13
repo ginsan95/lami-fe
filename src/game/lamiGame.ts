@@ -122,7 +122,7 @@ class LamiGame {
         const newCards = cardUtils.readjustJokersIfNeeded(
             result.cards,
             currentCards,
-            insertPosition
+            result.insertPosition
         );
         this.straightFlushCards[tableNum][row] = newCards;
         this.reducePlayerCards(playerNum, cards);

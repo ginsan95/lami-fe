@@ -12,6 +12,7 @@ import { getRandomName } from '../../constants/names';
 import routeURLs from '../Routes/urls';
 import useGameRoom from './useGameRoom';
 import { getLocalStorage } from '../../utils/storageUtils';
+import { joinClassNames } from '../../utils/cssUtils';
 
 interface RouteParams {
     roomID: string;
@@ -201,7 +202,10 @@ const GameRoom: React.FunctionComponent = () => {
                 <div className={styles.title}>{renderTitleContent()}</div>
                 <div className={styles.list_container}>
                     {players.map((player) => (
-                        <div className={styles.list_container_item}>
+                        <div
+                            key={player.name}
+                            className={styles.list_container_item}
+                        >
                             <div
                                 className={styles.player_avatar}
                                 style={{
@@ -209,9 +213,12 @@ const GameRoom: React.FunctionComponent = () => {
                                 }}
                             />
                             <div
-                                className={`${styles.player_name} ${
-                                    player.name === myName ? styles.player_name_self : ''
-                                }`}
+                                className={joinClassNames(
+                                    styles.player_name,
+                                    player.name === myName
+                                        ? styles.player_name_self
+                                        : ''
+                                )}
                             >
                                 {player.name}
                                 {player.isHost ? ' (Host)' : ''}

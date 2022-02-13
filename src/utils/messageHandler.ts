@@ -36,6 +36,7 @@ export interface IMessageHandler {
         type: MessageType.CALCULATE_PLAYER_SCORE,
         handler: (payload: CalculatePlayerScorePayload) => void
     ): void;
+    on(type: MessageType.SCORE_BOARD_HOST_READY, handler: () => void): void;
 
     on(type: MessageType.ERROR, handler: (error: Error) => void): void;
 }

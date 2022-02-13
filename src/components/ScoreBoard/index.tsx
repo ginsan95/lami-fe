@@ -60,16 +60,25 @@ const ScoreBoard: React.FunctionComponent = () => {
 
     const messageHandler = useRef<IMessageHandler>(new MessageHandler());
 
-    // Setup message handler && send initial message.
+    // Setup message handler.
     useEffect(() => {
         roomManager.messageHandler = messageHandler.current as MessageHandler;
-        if (playerNum !== undefined && cards) {
+        return () => (roomManager.messageHandler = undefined);
+    }, [playerNum, cards]);
+
+    // Send initial message.
+    useEffect(() => {
+        if (isHost) {
+            // Host need to inform players that he has arrived here, and ready to receive message.
+            // Handle cases where player arrived before host.
+            roomManager.sendMessage(scoreBoardActions.scoreBoardHostReady());
+        } else if (playerNum !== undefined && cards) {
+            // Try to send the score to host. Handle cases where host arrived before player and missed ready message.
             roomManager.sendMessage(
                 scoreBoardActions.calculatePlayerScore({ playerNum, cards })
             );
         }
-        return () => (roomManager.messageHandler = undefined);
-    }, [playerNum, cards]);
+    }, [isHost, playerNum, cards]);
 
     // Common message handler. Host and client share the same.
     useEffect(() => {
@@ -92,7 +101,6 @@ const ScoreBoard: React.FunctionComponent = () => {
         // Wait until all cards are available then only inform the clients.
         // Prevent cases where clients haven't reach this page yet.
         allCards.forEach((cards, index) => {
-            if (index === playerNum) return; // Ignore for host player num.
             roomManager.sendMessage(
                 scoreBoardActions.calculatePlayerScore({
                     playerNum: index,
@@ -107,6 +115,15 @@ const ScoreBoard: React.FunctionComponent = () => {
         if (isHost) return;
 
         const handler = messageHandler.current;
+
+        handler.on(MessageType.SCORE_BOARD_HOST_READY, () => {
+            // Host is ready, we can send the scores.
+            if (playerNum !== undefined && cards) {
+                roomManager.sendMessage(
+                    scoreBoardActions.calculatePlayerScore({ playerNum, cards })
+                );
+            }
+        });
 
         handler.on(MessageType.START_GAME, (payload) => {
             const {
@@ -125,7 +142,7 @@ const ScoreBoard: React.FunctionComponent = () => {
                 playersCount,
             });
         });
-    }, [isHost, history, playerNum, playersCount]);
+    }, [isHost, history, playerNum, playersCount, cards]);
 
     // Increase the number of wins for the winner.
     useEffect(() => {

@@ -11,6 +11,7 @@ export enum MessageType {
     SURRENDER = 'surrender',
 
     CALCULATE_PLAYER_SCORE = 'calculate_player_score',
+    SCORE_BOARD_HOST_READY = 'score_board_host_ready',
 }
 
 export interface Message<T = any> {

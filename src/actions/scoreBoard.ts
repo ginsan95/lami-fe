@@ -13,3 +13,10 @@ export function calculatePlayerScore(
         payload,
     };
 }
+
+export function scoreBoardHostReady(): Message<{}> {
+    return {
+        type: MessageType.SCORE_BOARD_HOST_READY,
+        payload: {},
+    };
+}

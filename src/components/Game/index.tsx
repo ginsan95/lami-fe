@@ -40,6 +40,7 @@ const Game: React.FunctionComponent = () => {
                 width: '100%',
                 display: 'flex',
                 flexDirection: 'column',
+                perspective: '1000px'
             }}
         >
             <LamiGameProvider

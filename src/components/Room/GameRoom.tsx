@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
-import { Button, CircularProgress, List, ListItemText } from '@mui/material';
+import { Button, CircularProgress } from '@mui/material';
 
 import roomManager from '../../utils/roomManager2';
 import { Player } from '../../models/player';
@@ -12,6 +12,7 @@ import { getRandomName } from '../../constants/names';
 import routeURLs from '../Routes/urls';
 import useGameRoom from './useGameRoom';
 import { getLocalStorage } from '../../utils/storageUtils';
+import { joinClassNames } from '../../utils/cssUtils';
 
 interface RouteParams {
     roomID: string;
@@ -180,7 +181,7 @@ const GameRoom: React.FunctionComponent = () => {
             return (
                 <>
                     <span>Room: {actualRoomID}</span>
-                    <Button onClick={copyRoomURL}>Link</Button>
+                    <Button onClick={copyRoomURL}>Copy</Button>
                 </>
             );
         }
@@ -197,38 +198,48 @@ const GameRoom: React.FunctionComponent = () => {
 
     return (
         <div className={styles.container}>
-            <h2 className={styles.title}>{renderTitleContent()}</h2>
-            <List className={styles.list_container}>
-                {players.map((player) => (
-                    <ListItemText
-                        key={player.name}
-                        primary={
-                            <span
-                                style={
+            <div className={styles.wrapper}>
+                <div className={styles.title}>{renderTitleContent()}</div>
+                <div className={styles.list_container}>
+                    {players.map((player) => (
+                        <div
+                            key={player.name}
+                            className={styles.list_container_item}
+                        >
+                            <div
+                                className={styles.player_avatar}
+                                style={{
+                                    backgroundImage: `url(https://avatars.dicebear.com/api/micah/${player.name}.svg)`,
+                                }}
+                            />
+                            <div
+                                className={joinClassNames(
+                                    styles.player_name,
                                     player.name === myName
-                                        ? { fontWeight: 'bold' }
-                                        : undefined
-                                }
+                                        ? styles.player_name_self
+                                        : ''
+                                )}
                             >
                                 {player.name}
                                 {player.isHost ? ' (Host)' : ''}
-                            </span>
-                        }
-                    />
-                ))}
-            </List>
-            {isHost && (
-                <div>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        disabled={players.length < 3}
-                        onClick={startGame}
-                    >
-                        Start Game
-                    </Button>
+                            </div>
+                        </div>
+                    ))}
                 </div>
-            )}
+
+                {isHost && (
+                    <div className={styles.action_wrapper}>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            disabled={players.length < 3}
+                            onClick={startGame}
+                        >
+                            Start Game
+                        </Button>
+                    </div>
+                )}
+            </div>
         </div>
     );
 };

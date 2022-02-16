@@ -3,6 +3,13 @@ import { ButtonBase } from '@mui/material';
 import * as cssUtils from '../../utils/cssUtils';
 import { Card, CardNumber, CardSuit } from '../../models/card';
 import styles from './CardComponent.module.sass';
+import {
+    JokerIcon,
+    SpadeIcon,
+    DiamondIcon,
+    HeartIcon,
+    ClubIcon,
+} from './CardIcons';
 
 interface CardComponentProps {
     card: Card;
@@ -15,26 +22,32 @@ interface CardComponentProps {
     onClick?: () => void;
 }
 
-function getCardName(card: Card): string {
+function getCardName(card: Card): {
+    letter: string;
+    emoji: React.ReactNode;
+} {
     if (card.suit === CardSuit.joker) {
-        return 'JOK';
+        return {
+            letter: 'JOK',
+            emoji: <JokerIcon />,
+        };
     }
-    let emoji = String(card.suit);
+    let emoji = null;
     switch (card.suit) {
         case CardSuit.spade: {
-            emoji = '♠️';
+            emoji = <SpadeIcon />;
             break;
         }
         case CardSuit.heart: {
-            emoji = '♥️';
+            emoji = <HeartIcon />;
             break;
         }
         case CardSuit.club: {
-            emoji = '♣️';
+            emoji = <ClubIcon />;
             break;
         }
         case CardSuit.diamond: {
-            emoji = '♦️';
+            emoji = <DiamondIcon />;
             break;
         }
     }
@@ -57,7 +70,10 @@ function getCardName(card: Card): string {
             break;
         }
     }
-    return letter + emoji;
+    return {
+        letter,
+        emoji,
+    };
 }
 
 function getColor(suit: CardSuit): string {
@@ -65,11 +81,11 @@ function getColor(suit: CardSuit): string {
         case CardSuit.spade:
             return 'black';
         case CardSuit.heart:
-            return 'crimson';
+            return 'red';
         case CardSuit.club:
-            return 'purple';
+            return 'black';
         case CardSuit.diamond:
-            return 'cadetblue';
+            return 'red';
         case CardSuit.joker:
             return 'brown';
         default:
@@ -102,7 +118,11 @@ const CardComponent: React.FunctionComponent<CardComponentProps> = (props) => {
                 backgroundColor: 'white',
                 ...style,
             }}
-            className={cssUtils.joinClassNames(styles.card_holder, className)}
+            className={cssUtils.joinClassNames(
+                styles.card_holder,
+                selected ? styles.card_holder_selected : '',
+                className
+            )}
         >
             <ButtonBase
                 style={{
@@ -115,14 +135,27 @@ const CardComponent: React.FunctionComponent<CardComponentProps> = (props) => {
                 onClick={onClick}
                 disabled={!clickable}
             >
-                {cardName}
+                {cardName.letter === 'JOK' ? (
+                    <div className={styles.card_joker}>{cardName.emoji}</div>
+                ) : (
+                    <>
+                        <div className={styles.card_number}>
+                            <span>{cardName.emoji}</span>
+                            <span>{cardName.letter}</span>
+                        </div>
+                        <div className={styles.card_suit}>{cardName.emoji}</div>
+                        <div
+                            className={cssUtils.joinClassNames(
+                                styles.card_number,
+                                styles.card_number_bottom
+                            )}
+                        >
+                            <span>{cardName.emoji}</span>
+                            <span>{cardName.letter}</span>
+                        </div>
+                    </>
+                )}
             </ButtonBase>
-            {selected && (
-                <div
-                    style={{ height: '100%', width: '100%' }}
-                    className={styles.card_overlay}
-                />
-            )}
         </div>
     );
 };

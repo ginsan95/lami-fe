@@ -1,10 +1,52 @@
+@import "../../variable"
+
 .card_holder
   position: relative
-  border: solid 1px
+  border: solid 1px #eee
+  border-radius: 4px
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3)
+  transition: transform 200ms $materialCubicBezier
+  &:before
+    content: ""
+    position: absolute
+    top: 0
+    right: 0
+    bottom: 0
+    left: 0
+    opacity: 0
+    pointer-events: none
+    background-color: rgba(233, 212, 96, 0.5)
+    transition: opacity 200ms $materialCubicBezier
 
-.card_overlay
-  background-color: rgba(233, 212, 96, 0.5)
+  &_selected
+    transform: translateY(-10px)
+    &:before
+      opacity: 1
+
+.card_number
   position: absolute
-  top: 0
-  left: 0
-  pointer-events: none
+  top: 5px
+  left: 5px
+  display: flex
+  flex-direction: column
+  font-size: 1rem
+  &_bottom
+    display: none
+    top: initial
+    left: initial
+    font-size: 0.75rem
+    right: 0
+    bottom: 0
+    transform: rotate(180deg)
+
+.card_suit
+  font-size: 1.5rem
+  position: absolute
+  bottom: 0
+  right: 0
+
+.card_joker
+  display: flex
+  align-items: center
+  justify-content: center
+  font-size: 3rem

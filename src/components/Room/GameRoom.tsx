@@ -13,6 +13,7 @@ import routeURLs from '../Routes/urls';
 import useGameRoom from './useGameRoom';
 import { getLocalStorage } from '../../utils/storageUtils';
 import { joinClassNames } from '../../utils/cssUtils';
+import ProfilePicture from '../Game/ProfilePicture';
 
 interface RouteParams {
     roomID: string;
@@ -206,12 +207,7 @@ const GameRoom: React.FunctionComponent = () => {
                             key={player.name}
                             className={styles.list_container_item}
                         >
-                            <div
-                                className={styles.player_avatar}
-                                style={{
-                                    backgroundImage: `url(https://avatars.dicebear.com/api/micah/${player.name}.svg)`,
-                                }}
-                            />
+                            <ProfilePicture playerName={player.name} />
                             <div
                                 className={joinClassNames(
                                     styles.player_name,

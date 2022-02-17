@@ -5,6 +5,8 @@ import CardHand from './CardHand';
 import { useLocation } from 'react-router-dom';
 import LamiGame from '../../game/lamiGame';
 import { Card } from '../../models/card';
+import { isDev } from '../../utils/devUtils';
+import Deck from '../../game/deck';
 
 interface LocationState {
     isHost?: boolean;
@@ -14,9 +16,17 @@ interface LocationState {
     playersCount?: 3 | 4;
 }
 
+function getFallbackGame() {
+    if (isDev()) {
+        const cards = new Deck().getCards(0);
+        return new LamiGame(0, cards, 0, 4);
+    }
+    return undefined;
+}
+
 const Game: React.FunctionComponent = () => {
     const {
-        playerNum,
+        playerNum = 0,
         cards,
         startingPlayerNum = 0,
         isHost = false,
@@ -26,10 +36,10 @@ const Game: React.FunctionComponent = () => {
     const lamiGame = useRef<LamiGame | undefined>(
         playerNum !== undefined && cards
             ? new LamiGame(playerNum, cards, startingPlayerNum, playersCount)
-            : undefined
+            : getFallbackGame()
     );
 
-    if (!lamiGame.current || playerNum === undefined || isHost === undefined) {
+    if (!lamiGame.current) {
         return <>Error: Missing Game</>;
     }
 
@@ -40,7 +50,6 @@ const Game: React.FunctionComponent = () => {
                 width: '100%',
                 display: 'flex',
                 flexDirection: 'column',
-                perspective: '1000px'
             }}
         >
             <LamiGameProvider

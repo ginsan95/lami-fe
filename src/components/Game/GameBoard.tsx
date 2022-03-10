@@ -4,8 +4,12 @@ import StraightFlushCards from './StraightFlushCards';
 import DiscardedCards from './DiscardedCards';
 import useLamiGame from './useLamiGame';
 
-const verticalWidth = 50 * 3 + 8 * 2;
-const horizontalHeight = 50 * 2 + 8;
+function getRowsSpace(row: number) {
+    return 50 * row + 8 * (row - 1);
+}
+
+const verticalWidth = getRowsSpace(2);
+const horizontalHeight = getRowsSpace(1);
 
 const GameBoard: React.FunctionComponent = () => {
     const { game } = useLamiGame();

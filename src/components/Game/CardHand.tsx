@@ -68,12 +68,16 @@ const CardHand: React.FunctionComponent<CardHandProps> = (props) => {
     };
 
     const cardMarginRightNeeded =
-        (containerWidth - keyedCards.length * CARD_WIDTH) /
-        (keyedCards.length - 1);
-    const cardMarginRight = Math.min(cardMarginRightNeeded, 8);
+        (containerWidth - keyedCards.length * CARD_WIDTH) / keyedCards.length;
+    const cardMarginRight = Math.max(Math.min(cardMarginRightNeeded, 8), -20);
 
     return (
-        <div ref={containerRef} className={styles.container}>
+        <div
+            ref={containerRef}
+            style={{
+                backgroundColor: game.allowedToPlay ? 'rosybrown' : 'lightgray',
+            }}
+        >
             <div className={styles.cards_container}>
                 {keyedCards.map((card, index) => (
                     <CardComponent
@@ -100,7 +104,7 @@ const CardHand: React.FunctionComponent<CardHandProps> = (props) => {
                     onClick={playNewStraightFlushCards('start')}
                     disabled={!game.allowedToPlay}
                 >
-                    Play Start
+                    Play_Start
                 </Button>
                 <Button
                     variant="contained"
@@ -108,7 +112,7 @@ const CardHand: React.FunctionComponent<CardHandProps> = (props) => {
                     onClick={playNewStraightFlushCards('end')}
                     disabled={!game.allowedToPlay}
                 >
-                    Play End
+                    Play_End
                 </Button>
                 <Button
                     variant="contained"
@@ -133,14 +137,14 @@ const CardHand: React.FunctionComponent<CardHandProps> = (props) => {
                     color="secondary"
                     onClick={resetSelection}
                 >
-                    Reset Selection
+                    Reset
                 </Button>
                 <Button
                     variant="contained"
                     color="secondary"
                     onClick={changeSort}
                 >
-                    Change Sort
+                    Sort
                 </Button>
             </div>
             <Dialog open={isSurrenderOpen}>

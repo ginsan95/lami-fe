@@ -8,15 +8,18 @@ function getRowsSpace(row: number) {
     return 50 * row + 8 * (row - 1);
 }
 
-const verticalWidth = getRowsSpace(
-    window.innerHeight > window.innerWidth ? 1 : 2
-);
-const horizontalHeight = getRowsSpace(
-    window.innerHeight > window.innerWidth ? 2 : 1
-);
+const verticalRows = window.innerHeight > window.innerWidth ? 1 : 2;
+const horizontalRows = window.innerHeight > window.innerWidth ? 2 : 1;
 
 const GameBoard: React.FunctionComponent = () => {
-    const { game } = useLamiGame();
+    const { game, isDiscardCollapsed } = useLamiGame();
+
+    const verticalWidth = getRowsSpace(
+        isDiscardCollapsed ? verticalRows + 1 : verticalRows
+    );
+    const horizontalHeight = getRowsSpace(
+        isDiscardCollapsed ? horizontalRows + 1 : horizontalRows
+    );
 
     return (
         <div className={styles.container}>

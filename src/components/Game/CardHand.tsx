@@ -21,6 +21,8 @@ const CardHand: React.FunctionComponent<CardHandProps> = (props) => {
         playNewStraightFlushCards,
         discardCards,
         surrender,
+        isDiscardCollapsed,
+        setIsDiscardCollapsed,
     } = useLamiGame();
     const cards = game.handCards;
 
@@ -65,6 +67,10 @@ const CardHand: React.FunctionComponent<CardHandProps> = (props) => {
 
     const resetSelection = () => {
         setSelectedCards({});
+    };
+
+    const toggleCollapse = () => {
+        setIsDiscardCollapsed((isCollapsed) => !isCollapsed);
     };
 
     const cardMarginRightNeeded =
@@ -145,6 +151,13 @@ const CardHand: React.FunctionComponent<CardHandProps> = (props) => {
                     onClick={changeSort}
                 >
                     Sort
+                </Button>
+                <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={toggleCollapse}
+                >
+                    {isDiscardCollapsed ? 'Expand' : 'Collapse'}
                 </Button>
             </div>
             <Dialog open={isSurrenderOpen}>

@@ -19,6 +19,8 @@ export interface ILamiGameContext {
     endGameIfPossible: () => void;
     selectedCards: SelectedCards;
     setSelectedCards: React.Dispatch<React.SetStateAction<SelectedCards>>;
+    isDiscardCollapsed: boolean;
+    setIsDiscardCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const LamiGameContext = React.createContext<ILamiGameContext>({
@@ -28,6 +30,8 @@ export const LamiGameContext = React.createContext<ILamiGameContext>({
     endGameIfPossible: () => {},
     selectedCards: {},
     setSelectedCards: () => {},
+    isDiscardCollapsed: false,
+    setIsDiscardCollapsed: () => {},
 });
 
 interface LamiGameProviderProps {
@@ -44,6 +48,7 @@ export const LamiGameProvider: React.FunctionComponent<LamiGameProviderProps> = 
 }) => {
     const [round, setRound] = useState(1);
     const [selectedCards, setSelectedCards] = useState({});
+    const [isDiscardCollapsed, setIsDiscardCollapsed] = useState(false);
 
     const history = useHistory();
 
@@ -126,6 +131,8 @@ export const LamiGameProvider: React.FunctionComponent<LamiGameProviderProps> = 
                 endGameIfPossible,
                 selectedCards,
                 setSelectedCards,
+                isDiscardCollapsed,
+                setIsDiscardCollapsed,
             }}
         >
             {children}

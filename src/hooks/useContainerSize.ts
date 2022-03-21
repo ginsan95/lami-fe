@@ -11,22 +11,19 @@ export default function useContainerSize(
     });
 
     useEffect(() => {
-        const updateParentSize = () => {
-            if (containerRef.current) {
-                const {
-                    width,
-                    height,
-                } = containerRef.current.getBoundingClientRect();
-                setContainerSize({ width, height });
-            }
-        };
-
-        updateParentSize();
+        const container = containerRef.current;
+        if (!container) {
+            return () => {};
+        }
 
         // Update the container size when window resized
-        window.addEventListener('resize', updateParentSize);
+        const resizeObserver = new ResizeObserver(() => {
+            const { width, height } = container.getBoundingClientRect();
+            setContainerSize({ width, height });
+        });
+        resizeObserver.observe(container);
         return () => {
-            window.removeEventListener('resize', updateParentSize);
+            resizeObserver.unobserve(container);
         };
     }, [containerRef]);
 

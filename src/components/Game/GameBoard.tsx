@@ -1,28 +1,35 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import styles from './GameBoard.module.sass';
 import StraightFlushCards from './StraightFlushCards';
 import DiscardedCards from './DiscardedCards';
 import useLamiGame from './useLamiGame';
+import useContainerSize from '../../hooks/useContainerSize';
 
 function getRowsSpace(row: number) {
     return 50 * row + 8 * (row - 1);
 }
 
-const verticalRows = window.innerHeight > window.innerWidth ? 1 : 2;
-const horizontalRows = window.innerHeight > window.innerWidth ? 2 : 1;
-
 const GameBoard: React.FunctionComponent = () => {
     const { game, isDiscardCollapsed } = useLamiGame();
 
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    const { width: containerWidth, height: containerHeight } = useContainerSize(
+        containerRef
+    );
+
+    const verticalRows = containerHeight > containerWidth ? 1 : 2;
     const verticalWidth = getRowsSpace(
         isDiscardCollapsed ? verticalRows + 1 : verticalRows
     );
+
+    const horizontalRows = containerHeight > containerWidth ? 2 : 1;
     const horizontalHeight = getRowsSpace(
         isDiscardCollapsed ? horizontalRows + 1 : horizontalRows
     );
 
     return (
-        <div className={styles.container}>
+        <div ref={containerRef} className={styles.container}>
             {game.playersCount >= 4 && (
                 <StraightFlushCards
                     tableNum={game.getTableNumber('left')}

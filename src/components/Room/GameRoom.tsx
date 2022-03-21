@@ -209,7 +209,9 @@ const GameRoom: React.FunctionComponent = () => {
                             <div
                                 className={styles.player_avatar}
                                 style={{
-                                    backgroundImage: `url(https://avatars.dicebear.com/api/micah/${player.name}.svg)`,
+                                    backgroundImage: `url(https://avatars.dicebear.com/api/micah/${window.encodeURIComponent(
+                                        player.name
+                                    )}.svg)`,
                                 }}
                             />
                             <div

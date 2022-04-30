@@ -190,7 +190,9 @@ export function isSameKind(cards: Card[]): boolean {
     if (num != null) {
         return cards.findIndex(i => i.number !== num && i.suit !== CardSuit.joker) === -1;
     }
-    return false;
+    
+    // If all joker should be fine
+    return true;
 }
 
 export function readjustJokersIfNeeded(

@@ -108,8 +108,6 @@ class LamiGame {
 
         if (tableNum >= this.straightFlushCards.length) return false;
         if (cards.length === 0) return false;
-        if (cards.length === 1 && this.discardedCards[cards[0].number])
-            return false; // Cannot add single card that is discarded.
 
         const currentCards: Card[] =
             this.straightFlushCards[tableNum][row] ?? [];

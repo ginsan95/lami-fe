@@ -59,6 +59,7 @@ describe('cardUtils', () => {
                 CardNumber.five,
                 CardNumber.six,
             ]),
+            insertPosition: 'end',
         });
 
         // test 13 cards
@@ -66,6 +67,7 @@ describe('cardUtils', () => {
         expect(isStraightFlush(diamond13Cards)).toStrictEqual({
             valid: true,
             cards: makeDiamondCards(allCardNumbers),
+            insertPosition: 'start',
         });
 
         // test A to 2
@@ -77,6 +79,7 @@ describe('cardUtils', () => {
         expect(isStraightFlush(aceTo2Cards)).toStrictEqual({
             valid: true,
             cards: aceTo2Cards,
+            insertPosition: 'end',
         });
 
         // test 2 cards
@@ -130,6 +133,7 @@ describe('cardUtils', () => {
         expect(isStraightFlush(jokerCards)).toStrictEqual({
             valid: true,
             cards: expectedJokerCards,
+            insertPosition: 'end',
         });
 
         // test with joker for Ace at start - [A, Joker, Joker, 4, Joker, 6]
@@ -152,6 +156,7 @@ describe('cardUtils', () => {
         expect(isStraightFlush(jokerAceTo2Cards)).toStrictEqual({
             valid: true,
             cards: expectedJokerAceTo2Cards,
+            insertPosition: 'end',
         });
 
         // test with extra jokers at start side - [Joker, 3, Joker, Joker, 6, Joker, 8]
@@ -163,6 +168,7 @@ describe('cardUtils', () => {
         expect(isStraightFlush(jokerExtraStartCards, 'start')).toStrictEqual({
             valid: true,
             cards: expectedJokerExtraStartCards,
+            insertPosition: 'start',
         });
 
         // test with extra jokers at end side - [3, Joker, Joker, 6, Joker, 8, Joker]
@@ -174,6 +180,7 @@ describe('cardUtils', () => {
         expect(isStraightFlush(jokerExtraEndCards, 'end')).toStrictEqual({
             valid: true,
             cards: expectedJokerExtraEndCards,
+            insertPosition: 'end',
         });
 
         // test will move joker to end if start no space - [A, Joker, Joker, 4, Joker, 6, Joker]
@@ -187,6 +194,7 @@ describe('cardUtils', () => {
         ).toStrictEqual({
             valid: true,
             cards: expectedJokerExtraMoveToEndCards,
+            insertPosition: 'end',
         });
 
         // test will move joker to start if end no space - [A, Joker, Joker, 4, Joker, 6, Joker]
@@ -204,6 +212,7 @@ describe('cardUtils', () => {
         ).toStrictEqual({
             valid: true,
             cards: expectedJokerExtraMoveToStartCards,
+            insertPosition: 'start',
         });
 
         // test not enough joker - [3, Joker, Joker, 6, 8]

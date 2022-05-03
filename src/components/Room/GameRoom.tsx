@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 import { Button, CircularProgress } from '@mui/material';
 
-import roomManager from '../../utils/roomManager2';
+import roomManager from '../../utils/roomManager';
 import { Player } from '../../models/player';
 import styles from './GameRoom.module.sass';
 import MessageHandler, { IMessageHandler } from '../../utils/messageHandler';
@@ -43,7 +43,7 @@ const GameRoom: React.FunctionComponent = () => {
     // Setup initial player for host
     useEffect(() => {
         if (isHost) {
-            setPlayers([{ name: myName, isHost, peerID: roomManager.peer.id }]);
+            setPlayers([{ name: myName, isHost, peerID: roomManager.getId() }]);
         }
     }, [isHost, setPlayers, myName]);
 
@@ -159,11 +159,11 @@ const GameRoom: React.FunctionComponent = () => {
                     const message = gameRoomActions.joinRoom({
                         name: myName,
                         isHost,
-                        peerID: roomManager.peer.id,
+                        peerID: roomManager.getId(),
                     });
                     roomManager.sendMessage(message);
                 }
-            } catch (error) {
+            } catch (error: any | undefined) {
                 setError(error);
             }
         };

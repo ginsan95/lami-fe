@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import LamiGame from '../../game/lamiGame';
 import { KeyedCard } from '../../hooks/useKeyedCards';
 import MessageHandler, { IMessageHandler } from '../../utils/messageHandler';
-import roomManager from '../../utils/roomManager2';
+import roomManager from '../../utils/roomManager';
 import { MessageType } from '../../models/message';
 import * as gameActions from '../../actions/game';
 import { useHistory } from 'react-router-dom';

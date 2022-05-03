@@ -25,12 +25,49 @@ const aceToTwoComparisonValue = compare(
 );
 
 export function isStraightFlush(
-    cards: Card[],
+    previousCards: Card[],
+    playingCards: Card[],
     insertPosition: 'start' | 'end' = 'end'
 ): { valid: boolean; cards: Card[]; insertPosition: 'start' | 'end' } {
-    if (cards.length < minCardCombo || cards.length > allCardNumbers.length) {
+    if (playingCards.length < minCardCombo || playingCards.length > allCardNumbers.length) {
         return { valid: false, cards: [], insertPosition };
     }
+
+    const temp = playingCards
+        .filter((card) => card.suit !== CardSuit.joker);
+
+    let defaultSuit: CardSuit;
+    
+    if (temp.length > 0) {
+        defaultSuit = temp[0].suit;
+    }
+
+    let cards: Card[] = [];
+    let jokerIndex: number[] = [];
+    let jokerCards: Card[] = [];
+
+    previousCards.forEach((o, i)=> {
+        if (o.suit == CardSuit.joker) {
+            jokerIndex.push(i);
+        }
+    });
+
+    jokerIndex.forEach((o) => {
+        let joker = previousCards[o];
+        jokerCards.push(joker);
+        (joker as any)['jokerValue'] = { number: joker.number, suit: CardSuit.joker }
+        if (o == 0) {
+            let nextCard = previousCards[1];
+            joker.number = nextCard.number - 1;
+            joker.suit = defaultSuit;
+            return;
+        }
+        let previousCard = previousCards[o - 1];
+        joker.number = previousCard.number + 1;
+        joker.suit = defaultSuit;
+    });
+
+    cards = [...previousCards, ...playingCards];
 
     const myCards = cards
         .filter((card) => card.suit !== CardSuit.joker)
@@ -119,6 +156,15 @@ export function isStraightFlush(
 
     addJokersToCards(newCards, jokerCount, myInsertPosition);
 
+    jokerCards.forEach(o => {
+        let val = (o as any)['jokerValue'];
+        if (val != null) {
+            o.number = val.number;
+            o.suit = val.suit;
+        }
+        delete (o as any)['jokerValue'];
+    });
+
     return { valid: true, cards: newCards, insertPosition: myInsertPosition };
 }
 
@@ -140,18 +186,12 @@ export function isSameKind(cards: Card[]): boolean {
     if (cards.length < minCardCombo) {
         return false;
     }
-    for (let i = 1; i < cards.length; i++) {
-        const card1 = cards[i - 1];
-        const card2 = cards[i];
-        // If any of them are joker, we consider it as valid
-        if (
-            card1.number !== card2.number &&
-            card1.suit !== CardSuit.joker &&
-            card2.suit !== CardSuit.joker
-        ) {
-            return false;
-        }
+    let num = cards.find(i => i.suit !== CardSuit.joker)?.number;
+    if (num != null) {
+        return cards.findIndex(i => i.number !== num && i.suit !== CardSuit.joker) === -1;
     }
+    
+    // If all joker should be fine
     return true;
 }
 

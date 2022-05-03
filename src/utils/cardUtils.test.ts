@@ -22,6 +22,38 @@ describe('cardUtils', () => {
         setShouldUniqueJoker(false);
     });
 
+    test('must fail cards', () => {
+        const diamond4Cards = makeDiamondCards([
+            CardNumber.five,
+            CardNumber.three,
+            CardNumber.six,
+        ]);
+        diamond4Cards.push(getJokerCard());
+
+        const properCards = makeDiamondCards([
+            CardNumber.three
+        ])
+        properCards.push(getJokerCard());
+        properCards.push(...makeDiamondCards([
+            CardNumber.five,
+            CardNumber.six
+        ]));
+        
+        expect(isStraightFlush([], diamond4Cards)).toStrictEqual({
+            valid: true,
+            cards: properCards,
+            insertPosition: 'end'
+        });
+
+        const extra = makeDiamondCards([CardNumber.four]);
+        
+        expect(isStraightFlush(properCards, extra)).toStrictEqual({
+            valid: false,
+            cards: [],
+            insertPosition: 'end'
+        });
+    });
+    
     test('card comparison', () => {
         const fourOfDiamond: Card = {
             number: CardNumber.four,
@@ -51,21 +83,22 @@ describe('cardUtils', () => {
             CardNumber.three,
             CardNumber.six,
         ]);
-        expect(isStraightFlush(diamond4Cards)).toStrictEqual({
+        expect(isStraightFlush([], diamond4Cards)).toStrictEqual({
             valid: true,
             cards: makeDiamondCards([
                 CardNumber.three,
                 CardNumber.four,
                 CardNumber.five,
                 CardNumber.six,
-            ]),
+            ]), insertPosition: 'end'
         });
 
         // test 13 cards
         const diamond13Cards = makeDiamondCards(allCardNumbers);
-        expect(isStraightFlush(diamond13Cards)).toStrictEqual({
+        expect(isStraightFlush([], diamond13Cards)).toStrictEqual({
             valid: true,
             cards: makeDiamondCards(allCardNumbers),
+            insertPosition: 'start'
         });
 
         // test A to 2
@@ -74,9 +107,10 @@ describe('cardUtils', () => {
             CardNumber.two,
             CardNumber.three,
         ]);
-        expect(isStraightFlush(aceTo2Cards)).toStrictEqual({
+        expect(isStraightFlush([], aceTo2Cards)).toStrictEqual({
             valid: true,
             cards: aceTo2Cards,
+            insertPosition: 'end'
         });
 
         // test 2 cards
@@ -84,16 +118,16 @@ describe('cardUtils', () => {
             CardNumber.five,
             CardNumber.four,
         ]);
-        expect(isStraightFlush(diamond2Cards).valid).toBe(false);
+        expect(isStraightFlush([], diamond2Cards).valid).toBe(false);
 
         // test different suits
         const mixed4Cards = [...diamond4Cards];
         mixed4Cards[1] = { ...mixed4Cards[1], suit: CardSuit.spade };
-        expect(isStraightFlush(mixed4Cards).valid).toBe(false);
+        expect(isStraightFlush([], mixed4Cards).valid).toBe(false);
 
         // test hole in card
         const holeInCards = [...diamond4Cards].slice(1, 4);
-        expect(isStraightFlush(holeInCards).valid).toBe(false);
+        expect(isStraightFlush([], holeInCards).valid).toBe(false);
 
         // test extra same number in card
         const sameNumberInCards = [...diamond4Cards];
@@ -101,14 +135,14 @@ describe('cardUtils', () => {
             number: CardNumber.six,
             suit: CardSuit.diamond,
         });
-        expect(isStraightFlush(sameNumberInCards).valid).toBe(false);
+        expect(isStraightFlush([], sameNumberInCards).valid).toBe(false);
 
         // test 14 cards
         const diamond14Cards = makeDiamondCards([
             ...allCardNumbers,
             CardNumber.ace,
         ]);
-        expect(isStraightFlush(diamond14Cards).valid).toBe(false);
+        expect(isStraightFlush([], diamond14Cards).valid).toBe(false);
     });
 
     test('isStraightFlush with joker cards', () => {
@@ -127,9 +161,10 @@ describe('cardUtils', () => {
         expectedJokerCards.splice(1, 0, getJokerCard());
         expectedJokerCards.splice(2, 0, getJokerCard());
         expectedJokerCards.splice(4, 0, getJokerCard());
-        expect(isStraightFlush(jokerCards)).toStrictEqual({
+        expect(isStraightFlush([], jokerCards)).toStrictEqual({
             valid: true,
             cards: expectedJokerCards,
+            insertPosition: 'end'
         });
 
         // test with joker for Ace at start - [A, Joker, Joker, 4, Joker, 6]
@@ -149,9 +184,10 @@ describe('cardUtils', () => {
         expectedJokerAceTo2Cards.splice(1, 0, getJokerCard());
         expectedJokerAceTo2Cards.splice(2, 0, getJokerCard());
         expectedJokerAceTo2Cards.splice(4, 0, getJokerCard());
-        expect(isStraightFlush(jokerAceTo2Cards)).toStrictEqual({
+        expect(isStraightFlush([], jokerAceTo2Cards)).toStrictEqual({
             valid: true,
             cards: expectedJokerAceTo2Cards,
+            insertPosition: 'end'
         });
 
         // test with extra jokers at start side - [Joker, 3, Joker, Joker, 6, Joker, 8]
@@ -160,9 +196,10 @@ describe('cardUtils', () => {
             getJokerCard(),
             ...expectedJokerCards,
         ];
-        expect(isStraightFlush(jokerExtraStartCards, 'start')).toStrictEqual({
+        expect(isStraightFlush([], jokerExtraStartCards, 'start')).toStrictEqual({
             valid: true,
             cards: expectedJokerExtraStartCards,
+            insertPosition: 'start'
         });
 
         // test with extra jokers at end side - [3, Joker, Joker, 6, Joker, 8, Joker]
@@ -171,9 +208,10 @@ describe('cardUtils', () => {
             ...expectedJokerCards,
             getJokerCard(),
         ];
-        expect(isStraightFlush(jokerExtraEndCards, 'end')).toStrictEqual({
+        expect(isStraightFlush([], jokerExtraEndCards, 'end')).toStrictEqual({
             valid: true,
             cards: expectedJokerExtraEndCards,
+            insertPosition: 'end'
         });
 
         // test will move joker to end if start no space - [A, Joker, Joker, 4, Joker, 6, Joker]
@@ -183,10 +221,11 @@ describe('cardUtils', () => {
             getJokerCard(),
         ];
         expect(
-            isStraightFlush(jokerExtraMoveToEndCards, 'start')
+            isStraightFlush([], jokerExtraMoveToEndCards, 'start')
         ).toStrictEqual({
             valid: true,
             cards: expectedJokerExtraMoveToEndCards,
+            insertPosition: 'end'
         });
 
         // test will move joker to start if end no space - [A, Joker, Joker, 4, Joker, 6, Joker]
@@ -200,16 +239,17 @@ describe('cardUtils', () => {
             ...makeDiamondCards([CardNumber.king, CardNumber.ace]),
         ];
         expect(
-            isStraightFlush(jokerExtraMoveToStartCards, 'end')
+            isStraightFlush([], jokerExtraMoveToStartCards, 'end')
         ).toStrictEqual({
             valid: true,
             cards: expectedJokerExtraMoveToStartCards,
+            insertPosition: 'start'
         });
 
         // test not enough joker - [3, Joker, Joker, 6, 8]
         const insufficientJokerCards = [...jokerCards];
         insufficientJokerCards.pop();
-        expect(isStraightFlush(insufficientJokerCards).valid).toBe(false);
+        expect(isStraightFlush([], insufficientJokerCards).valid).toBe(false);
     });
 
     test('isSameKind', () => {
@@ -224,6 +264,11 @@ describe('cardUtils', () => {
             suit: CardSuit.spade,
         });
         expect(isSameKind(someSame5AceCards)).toBe(true);
+
+        // failure
+        const failure = [...mixed4AceCards];
+        failure.push(...[getJokerCard(), ...makeDiamondCards([CardNumber.eight, CardNumber.eight])]);
+        expect(isSameKind(failure)).toBe(false);
 
         // test with joker
         const jokerCards = [

@@ -175,13 +175,19 @@ const GameRoom: React.FunctionComponent = () => {
         const url = window.location.origin + path;
         navigator.clipboard.writeText(url);
     };
+    const copyId = () => {
+        navigator.clipboard.writeText(actualRoomID || '');
+    };
 
     const renderTitleContent = () => {
         if (actualRoomID) {
             return (
                 <>
                     <span>Room: {actualRoomID}</span>
-                    <Button onClick={copyRoomURL}>Copy</Button>
+                    <div>
+                        <Button onClick={copyId}>Copy Id</Button>
+                        <Button onClick={copyRoomURL}>Copy Url</Button>
+                    </div>
                 </>
             );
         }

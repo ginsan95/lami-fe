@@ -2,9 +2,27 @@ import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Button, Divider, Paper, TextField } from '@mui/material';
 import styles from './Lobby.module.sass';
-import { getLocalStorage, saveLocalStorage, saveSessionStorage } from '../../utils/storageUtils';
+import {
+    getLocalStorage,
+    getSessionStorage,
+    saveLocalStorage,
+    saveSessionStorage,
+} from '../../utils/storageUtils';
 import { getRandomName } from '../../constants/names';
 import routeURLs from '../Routes/urls';
+
+const validateServerIp = (serverIp: string) => {
+    const regex: RegExp = RegExp(
+        'localhost|([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3})'
+    );
+    let returnMsg: string | null = null;
+    if (serverIp.trim().length === 0) {
+        returnMsg = 'Server IP cannot be empty';
+    } else if (regex.exec(serverIp) == null) {
+        returnMsg = 'Not a valid IP Address';
+    }
+    return returnMsg;
+};
 
 const Lobby: React.FunctionComponent = () => {
     const defaultName = getLocalStorage('name') ?? getRandomName();
@@ -15,27 +33,14 @@ const Lobby: React.FunctionComponent = () => {
     const [roomID, setRoomID] = useState('');
 
     const [isServerDefault, setisServerDefault] = useState(true);
-    const [serverIp, setServerIp] = useState('');
+    const [serverIp, setServerIp] = useState(getSessionStorage('hostIp') || '');
 
     const isNameError = name.trim().length === 0;
-    
-    const validateServerIp = () => {
-        let regex: RegExp = RegExp("localhost|([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3})");
-        let returnMsg: string | null = null;
-
-        if (serverIp.trim().length === 0) {
-            returnMsg = "Server IP cannot be empty";
-        } else if (regex.exec(serverIp) == null) {
-            returnMsg = "Not a valid IP Address";
-        }
-
-        return returnMsg;
-    }
 
     const handleSettingServerIP = (str: string) => {
         setServerIp(str);
         saveSessionStorage('hostIp', str);
-    }
+    };
 
     const isRoomIDError = roomID.trim().length === 0;
 
@@ -53,30 +58,32 @@ const Lobby: React.FunctionComponent = () => {
                 <Divider style={{ marginTop: 20, marginBottom: 20 }} />
                 <h2>Server</h2>
                 <Button
-                    variant={isServerDefault ? "contained" : "outlined"}
-                    style={{borderRadius: '4px 0px 0px 4px'}}
+                    variant={isServerDefault ? 'contained' : 'outlined'}
+                    style={{ borderRadius: '4px 0px 0px 4px' }}
                     onClick={() => setisServerDefault(true)}
                 >
                     Default
                 </Button>
                 <Button
-                    variant={isServerDefault ? "outlined" : "contained"}
-                    style={{borderRadius: '0px 4px 4px 0px'}}
+                    variant={isServerDefault ? 'outlined' : 'contained'}
+                    style={{ borderRadius: '0px 4px 4px 0px' }}
                     onClick={() => setisServerDefault(false)}
                 >
                     Custom
                 </Button>
-                {!isServerDefault ? <TextField
-                    required
-                    id="standard-required"
-                    label="Server IP"
-                    value={serverIp}
-                    onChange={(e) => handleSettingServerIP(e.target.value)}
-                    style={{marginTop: 20}}
-                    fullWidth
-                    error={validateServerIp() != null}
-                    helperText={validateServerIp()}
-                /> : null}
+                {!isServerDefault ? (
+                    <TextField
+                        required
+                        id="standard-required"
+                        label="Server IP"
+                        value={serverIp}
+                        onChange={(e) => handleSettingServerIP(e.target.value)}
+                        style={{ marginTop: 20 }}
+                        fullWidth
+                        error={validateServerIp(serverIp) != null}
+                        helperText={validateServerIp(serverIp)}
+                    />
+                ) : null}
                 <Divider style={{ marginTop: 20, marginBottom: 20 }} />
                 <TextField
                     required

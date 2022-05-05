@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import { LamiGameContext } from './lamiGameContext';
-import roomManager from '../../utils/roomManager2';
+import roomManager from '../../utils/roomManager';
 import * as gameActions from '../../actions/game';
 
 export default function useLamiGame() {

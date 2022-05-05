@@ -2,7 +2,7 @@ import { useContext } from 'react';
 import { GameRoomContext } from './gameRoomContext';
 import Deck from '../../game/deck';
 import * as gameRoomActions from '../../actions/gameRoom';
-import roomManager from '../../utils/roomManager2';
+import roomManager from '../../utils/roomManager';
 import routeURLs from '../Routes/urls';
 import { useHistory } from 'react-router-dom';
 

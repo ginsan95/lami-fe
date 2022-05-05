@@ -1,7 +1,8 @@
 import Peer, { DataConnection } from 'peerjs';
 import MessageHandler from './messageHandler';
+import { getSessionStorage } from './storageUtils';
 
-class RoomManager2 {
+class RoomManager {
     private _peer: Peer | undefined;
     private roomID: string | undefined;
 
@@ -9,11 +10,20 @@ class RoomManager2 {
 
     messageHandler?: MessageHandler;
 
-    get peer(): Peer {
+    private get peer(): Peer {
         if (!this._peer) {
-            this._peer = new Peer();
+            let hostIp: string | null = getSessionStorage('hostIp');
+            if (hostIp != null) {
+                this._peer = new Peer({host: hostIp, port: 9000});
+            } else {
+                this._peer = new Peer();
+            }
         }
         return this._peer;
+    }
+
+    getId = (): string => {
+        return this.peer.id;
     }
 
     createRoom = async (): Promise<string> => {
@@ -29,6 +39,7 @@ class RoomManager2 {
     };
 
     joinRoom = async (roomID: string): Promise<void> => {
+        // I got no idea why you need this.
         await this.initializePeer();
         return new Promise((resolve, reject) => {
             const connection = this.peer.connect(roomID);
@@ -82,6 +93,6 @@ class RoomManager2 {
     };
 }
 
-const roomManager = new RoomManager2();
+const roomManager = new RoomManager();
 
 export default roomManager;

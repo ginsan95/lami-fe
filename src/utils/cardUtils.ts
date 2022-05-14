@@ -140,19 +140,13 @@ export function isSameKind(cards: Card[]): boolean {
     if (cards.length < minCardCombo) {
         return false;
     }
-    for (let i = 1; i < cards.length; i++) {
-        const card1 = cards[i - 1];
-        const card2 = cards[i];
-        // If any of them are joker, we consider it as valid
-        if (
-            card1.number !== card2.number &&
-            card1.suit !== CardSuit.joker &&
-            card2.suit !== CardSuit.joker
-        ) {
-            return false;
-        }
-    }
-    return true;
+    const card = cards.find((c) => c.suit !== CardSuit.joker);
+    // If no card, means all are joker, which makes it true.
+    return card
+        ? cards.every(
+              (c) => c.suit === CardSuit.joker || c.number === card.number
+          )
+        : true;
 }
 
 export function readjustJokersIfNeeded(

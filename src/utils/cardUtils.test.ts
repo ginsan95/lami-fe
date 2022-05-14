@@ -248,11 +248,11 @@ describe('cardUtils', () => {
 
         // test different number
         const differentNumberCards = [...mixed4AceCards];
+        differentNumberCards.push(getJokerCard());
         differentNumberCards.push({
             number: CardNumber.two,
             suit: CardSuit.spade,
         });
-        differentNumberCards.push(getJokerCard());
         expect(isSameKind(differentNumberCards)).toBe(false);
     });
 });

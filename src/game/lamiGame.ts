@@ -124,6 +124,9 @@ class LamiGame {
             currentCards,
             result.insertPosition
         );
+
+        if (newCards.length !== combinedCards.length) return false;
+
         this.straightFlushCards[tableNum][row] = newCards;
         this.reducePlayerCards(playerNum, cards);
         this.reducePlayerCardsCount(playerNum, cards.length);

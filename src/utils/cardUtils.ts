@@ -13,6 +13,13 @@ export function getDescription(card: Card): string {
     return `${card.number}-${card.suit}`;
 }
 
+export function isEqual(card1: Card, card2: Card): boolean {
+    return (
+        (card1.suit === CardSuit.joker && card2.suit === CardSuit.joker) ||
+        (card1.number === card2.number && card1.suit === card2.suit)
+    );
+}
+
 export function compare(card1: Card, card2: Card): number {
     const card1InDeck = (card1.number - 1) * allCardSuits.length + card1.suit;
     const card2InDeck = (card2.number - 1) * allCardSuits.length + card2.suit;
@@ -225,4 +232,20 @@ export function calculateScore(cards: Card[]): number {
         }
         return total + score;
     }, 0);
+}
+
+export function isCardsSubset(
+    superCards: Card[],
+    subCards: Card[],
+    startOffset: number,
+    endOffset: number
+): boolean {
+    const mySuperCards = superCards.slice(startOffset, endOffset);
+    if (mySuperCards.length !== subCards.length) return false;
+    for (let i = 0; i < mySuperCards.length; i++) {
+        if (!isEqual(mySuperCards[i], subCards[i])) {
+            return false;
+        }
+    }
+    return true;
 }

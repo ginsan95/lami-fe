@@ -1,3 +1,4 @@
+import { differenceWith } from 'lodash';
 import { Card, CardNumber, CardSuit } from '../models/card';
 import * as cardUtils from '../utils/cardUtils';
 
@@ -125,7 +126,26 @@ class LamiGame {
             result.insertPosition
         );
 
+        // Prevent additional joker added at end or start.
         if (newCards.length !== combinedCards.length) return false;
+
+        // Prevent user from filling middle joker with a legit card.
+        if (currentCards.length > 0) {
+            const startOffset = insertPosition === 'start' ? cards.length : 0;
+            const endOffset =
+                insertPosition === 'start'
+                    ? newCards.length
+                    : currentCards.length;
+            if (
+                !cardUtils.isCardsSubset(
+                    newCards,
+                    currentCards,
+                    startOffset,
+                    endOffset
+                )
+            )
+                return false;
+        }
 
         this.straightFlushCards[tableNum][row] = newCards;
         this.reducePlayerCards(playerNum, cards);

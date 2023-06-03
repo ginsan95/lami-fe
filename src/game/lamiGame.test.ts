@@ -40,7 +40,7 @@ function getSampleHandCardsForDiscard(): Card[] {
     ];
 }
 
-describe('cardUtils', () => {
+describe('lamiGame', () => {
     beforeEach(() => {
         setShouldUniqueJoker(false);
     });
@@ -132,6 +132,64 @@ describe('cardUtils', () => {
             playerNum,
             cards,
             insertPosition: 'end',
+            table: { tableNum: playerNum, row: 0 },
+        });
+
+        expect(valid).toBe(false);
+        expect(game.straightFlushCards[playerNum]).toStrictEqual([
+            currentCards,
+        ]);
+        expect(game.handCards.length).toBe(20);
+    });
+
+    test('play invalid straight flush joker in middle', () => {
+        const playerNum = 0;
+        const game = new LamiGame(playerNum, getSampleHardCards(), 0, 4);
+        const currentCards = [
+            { number: CardNumber.five, suit: CardSuit.diamond },
+            getJokerCard(),
+            { number: CardNumber.seven, suit: CardSuit.diamond },
+        ];
+        game.straightFlushCards[playerNum] = [currentCards];
+        expect(game.straightFlushCards[playerNum]).toStrictEqual([
+            currentCards,
+        ]);
+
+        const cards = [{ number: CardNumber.six, suit: CardSuit.diamond }];
+        const valid = game.playStraightFlushCards({
+            playerNum,
+            cards,
+            insertPosition: 'start',
+            table: { tableNum: playerNum, row: 0 },
+        });
+
+        expect(valid).toBe(false);
+        expect(game.straightFlushCards[playerNum]).toStrictEqual([
+            currentCards,
+        ]);
+        expect(game.handCards.length).toBe(20);
+    });
+
+    test('play invalid straight flush joker in start', () => {
+        const playerNum = 0;
+        const game = new LamiGame(playerNum, getSampleHardCards(), 0, 4);
+        const currentCards = [
+            getJokerCard(),
+            ...makeCards(
+                [CardNumber.five, CardNumber.six, CardNumber.seven],
+                CardSuit.diamond
+            ),
+        ];
+        game.straightFlushCards[playerNum] = [currentCards];
+        expect(game.straightFlushCards[playerNum]).toStrictEqual([
+            currentCards,
+        ]);
+
+        const cards = [{ number: CardNumber.two, suit: CardSuit.diamond }];
+        const valid = game.playStraightFlushCards({
+            playerNum,
+            cards,
+            insertPosition: 'start',
             table: { tableNum: playerNum, row: 0 },
         });
 
